@@ -13,8 +13,17 @@ CollisionObject::CollisionObject()
 	collisionArea.setFillColor(sf::Color(0, 0, 0, 0));
 	collisionArea.setPosition(sf::Vector2f(-100, -100));
 	orientation = HORIZONTAL;
-	show = false;
 	type = FLOOR;
+	
+	identifier.setCharacterSize(FONTSIZECOLLISION);
+
+	sf::Font font;
+	if (!font.loadFromFile("The Citadels.otf"))
+	{
+		std::cout << "font failed to load" << std::endl;
+	}
+
+	identifier.setFont(font);
 }
 
 // Streamline Collision creation
@@ -27,6 +36,7 @@ void CollisionObject::InitializeCollision(PlatformType platformT, bool stopper, 
 	// Placeholders while inputted values are altered
 	sf::Vector2f colPosition;
 	sf::Vector2f colSize;
+	sf::Vector2f textPosition;
 
 	// ALter coordinates based on collision type
 
@@ -98,16 +108,35 @@ void CollisionObject::InitializeCollision(PlatformType platformT, bool stopper, 
 	switch (platformT)
 	{
 	case FLOOR:
+		//textPosition.x = colPosition.x + (colSize.x / 2);
+		//textPosition.y = colPosition.y + FONTSIZECOLLISION;
+		textPosition = colPosition;
+
 		collisionArea.setOutlineColor(sf::Color(255, 0, 0));
+		identifier.setFillColor(sf::Color(255, 0, 0));
+		identifier.setPosition(textPosition);
 		break;
 	case LEFT_WALL:
+		//textPosition.x = colPosition.x;
+		//textPosition.y = colPosition.y + (colSize.y / 2);
+		textPosition = colPosition;
+
 		collisionArea.setOutlineColor(sf::Color(0, 255, 0));
+		identifier.setFillColor(sf::Color(0, 255, 0));
 		break;
 	case RIGHT_WALL:
+		//textPosition.x = colPosition.x;
+		//textPosition.y = colPosition.y + FONTSIZECOLLISION;
+		textPosition = colPosition;
+
 		collisionArea.setOutlineColor(sf::Color(0, 0, 255));
+		identifier.setFillColor(sf::Color(0, 0, 255));
 		break;
 	case CEILING:
+
+		textPosition = colPosition;
 		collisionArea.setOutlineColor(sf::Color(255, 255, 0));
+		identifier.setFillColor(sf::Color(255, 255, 0));
 		break;
 	}
 }

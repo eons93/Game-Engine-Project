@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Enumerations.h"
 #include "Engine.h"
+#include "GeneralFunctions.h"
 
 Level::Level()
 {
@@ -25,6 +26,48 @@ void Level::attachMap(Map map)
 {
 	// Attach input map to be the selected map
 	selectedMap = map;
+
+	selectedMap.CollisionData.resize(MAXCOLLISIONS);
+
+	
+	for (int count = 0; count < MAXCOLLISIONS; count++)
+	{
+		if (count < 20)
+		{
+			map.CollisionData[count].identifier.setString("Collision (Floor): " + stringConvert(count));
+		}
+		else if (count < 40)
+		{
+			map.CollisionData[count].identifier.setString("Collision (Left): " + stringConvert(count - 20));
+		}
+		else if (count < 60)
+		{
+			map.CollisionData[count].identifier.setString("Collision (Right): " + stringConvert(count - 40));
+		}
+		else if (count < 80)
+		{
+			map.CollisionData[count].identifier.setString("Collision (Ceiling): " + stringConvert(count - 60));
+		}
+		else
+		{
+			map.CollisionData[count].identifier.setString("Collision (misc): " + stringConvert(count - 60));
+		}
+	}
+	for (int count = 0; count < MAXPLATFORMS; count++)
+	{
+		map.PlatformData[count].bottomCollision.identifier.setString("Collision (Ceiling): " + stringConvert(count));
+		map.PlatformData[count].topCollision.identifier.setString("Collision (Floor): " + stringConvert(count));
+		map.PlatformData[count].leftCollision.identifier.setString("Collision (Left): " + stringConvert(count));
+		map.PlatformData[count].rightCollision.identifier.setString("Collision (Left): " + stringConvert(count));
+	}
+	for (int count = 0; count < MAXSLOPES; count++)
+	{
+		map.SlopeData[count].bottomCollision.identifier.setString("Collision (Ceiling): " + stringConvert(count));
+		map.SlopeData[count].topCollision.identifier.setString("Collision (Floor): " + stringConvert(count));
+		map.SlopeData[count].leftCollision.identifier.setString("Collision (Left): " + stringConvert(count));
+		map.SlopeData[count].rightCollision.identifier.setString("Collision (Left): " + stringConvert(count));
+	}
+	
 }
 
 // Checks if player is colliding with any surface
@@ -153,12 +196,6 @@ void Level::detectCollision1(Player &player)
 					player.falling = false;
 					player.canJump = true;
 				}
-				/*
-				else if ((difference > 0 && difference < 68)
-					&& player.position.y < startPoint.y - difference - 34)
-				{
-					player.velocity.y += 8;
-				}*/
 			}
 			//Left Slope
 			if (selectedMap.SlopeData[count].inverted == false &&

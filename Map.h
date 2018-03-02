@@ -16,9 +16,13 @@ public:
 	Map();
 
 	// Maps Physical Information
-	CollisionObject CollisionData[MAXCOLLISIONS];
-	SlopeObject SlopeData[MAXSLOPES];
-	PlatformObject PlatformData[MAXPLATFORMS];
+	std::vector<CollisionObject> CollisionData;
+	std::vector<SlopeObject> SlopeData;
+	std::vector<PlatformObject> PlatformData;
+	
+	//CollisionObject CollisionData[MAXCOLLISIONS];
+	//SlopeObject SlopeData[MAXSLOPES];
+	//PlatformObject PlatformData[MAXPLATFORMS];
 
 	// Maps Textures
 	sf::Texture bgImage;

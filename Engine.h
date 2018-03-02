@@ -38,6 +38,7 @@ private:
 
 	float limiter;
 	sf::Int32 frameCounter;
+	bool controlConnect;
 
 	// Private functions for internal use only
 	void input();

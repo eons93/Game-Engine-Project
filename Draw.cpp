@@ -50,6 +50,15 @@ void Engine::draw()
 	}
 	
 
+	level.selectedMap.CollisionData[0].identifier.getFillColor();
+	level.selectedMap.CollisionData[0].identifier.getCharacterSize();
+	level.selectedMap.CollisionData[0].identifier.getPosition();
+	level.selectedMap.CollisionData[0].identifier.getFont();
+	level.selectedMap.CollisionData[0].identifier.getString();
+	
+	
+	m_Window.draw(level.selectedMap.CollisionData[1].identifier);
+
 	// Show everything we have just drawn
 	m_Window.display();
 }

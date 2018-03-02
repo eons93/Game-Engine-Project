@@ -21,6 +21,10 @@ void Level::loadMaps()
 			std::cout << "Level Image Failed to load" << std::endl;
 		}
 
+		playground.CollisionData.resize(MAXCOLLISIONS);
+		playground.SlopeData.resize(MAXSLOPES);
+		playground.PlatformData.resize(MAXPLATFORMS);
+
 		// Spawn Location
 		playground.playerSpawn.x = bitConvert64(15.5);
 		playground.playerSpawn.y = bitConvert64(15);
@@ -31,24 +35,36 @@ void Level::loadMaps()
 		playground.CollisionData[2].InitializeCollision(FLOOR, true, sf::Vector2f(36, 19), sf::Vector2f(2, 0));
 		playground.CollisionData[3].InitializeCollision(FLOOR, true, sf::Vector2f(42, 18), sf::Vector2f(4, 0));
 		playground.CollisionData[4].InitializeCollision(FLOOR, true, sf::Vector2f(25, 19), sf::Vector2f(3, 0));
+		playground.CollisionData[5].InitializeCollision(FLOOR, true, sf::Vector2f(42, 13), sf::Vector2f(4, 0));
+		
 
 
 		// Left Collisions -- GREEN
-		playground.CollisionData[20].InitializeCollision(LEFT_WALL, true, sf::Vector2f(28, 20), sf::Vector2f(0, 4));
-		playground.CollisionData[21].InitializeCollision(LEFT_WALL, true, sf::Vector2f(38, 19), sf::Vector2f(0, 5));
+		playground.CollisionData[100].InitializeCollision(LEFT_WALL, true, sf::Vector2f(4, 4), sf::Vector2f(0, 16));
+		playground.CollisionData[101].InitializeCollision(LEFT_WALL, true, sf::Vector2f(28, 20), sf::Vector2f(0, 4));
+		playground.CollisionData[102].InitializeCollision(LEFT_WALL, true, sf::Vector2f(38, 19), sf::Vector2f(0, 5));
 
 		// Right Collisions -- BLUE
-		playground.CollisionData[40].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(36, 19), sf::Vector2f(0, 5));
-		playground.CollisionData[41].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(46, 0), sf::Vector2f(0, 24));
-		playground.CollisionData[42].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 18), sf::Vector2f(0, 1));
+		
+		playground.CollisionData[200].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(36, 19), sf::Vector2f(0, 5));
+		playground.CollisionData[201].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(46, 0), sf::Vector2f(0, 24));
+		playground.CollisionData[202].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 18), sf::Vector2f(0, 1));
+		playground.CollisionData[203].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 13), sf::Vector2f(0, 1));
 
 		// Ceiling Collisions -- YELLOW
-		playground.CollisionData[60].InitializeCollision(CEILING, true, sf::Vector2f(42, 19), sf::Vector2f(4, 0));
+		
+		playground.CollisionData[301].InitializeCollision(CEILING, true, sf::Vector2f(42, 19), sf::Vector2f(4, 0));
+		playground.CollisionData[302].InitializeCollision(CEILING, true, sf::Vector2f(42, 14), sf::Vector2f(4, 0));
+		playground.CollisionData[303].InitializeCollision(CEILING, true, sf::Vector2f(4, 4), sf::Vector2f(42, 0));
+
 
 		// Platform Collisions
 		playground.PlatformData[0].InitializePlatform(sf::Vector2f(34, 21), sf::Vector2f(2, .25));
 		playground.PlatformData[1].InitializePlatform(sf::Vector2f(38, 21), sf::Vector2f(2, .25));
 		playground.PlatformData[2].InitializePlatform(sf::Vector2f(34, 15), sf::Vector2f(6, .25));
+		playground.PlatformData[3].InitializePlatform(sf::Vector2f(38, 10), sf::Vector2f(3, .25));
+		playground.PlatformData[4].InitializePlatform(sf::Vector2f(6, 7), sf::Vector2f(31, .25));
+
 
 		// Slope Collisions
 		playground.SlopeData[0].InitializeSlope(RIGHT, false, sf::Vector2f(23, 19), sf::Vector2f(2, 1));

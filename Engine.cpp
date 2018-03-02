@@ -6,6 +6,8 @@
 #include <iostream>
 #include "Constants.h"
 #include "Enumerations.h"
+#include "GeneralFunctions.h"
+#include <string.h>
 
 Engine::Engine()
 {
@@ -49,6 +51,7 @@ Engine::Engine()
 	playerCamera.setSize(resolution.x * 0.625, resolution.y * 0.625);
 	hud.attachCamera(playerCamera);
 
+	
 }
 
 void Engine::start()

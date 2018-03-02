@@ -17,8 +17,9 @@ public:
 	sf::RectangleShape collisionArea;	// Physical Representation
 	bool barrier;
 	PlatformType type;					// Which surface
-	bool show;							// Toggle visability for developer mode
 	bool orientation;					// Horizontal or Verticle
+
+	sf::Text identifier;
 
 };
 
