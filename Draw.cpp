@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Engine.h"
 #include "Level.h"
+#include "Enemy.h"
 #include <iostream>
 
 void Engine::draw()
@@ -32,12 +33,19 @@ void Engine::draw()
 		m_Window.draw(level.selectedMap.PlatformData[count].leftCollision.collisionArea);
 		m_Window.draw(level.selectedMap.PlatformData[count].rightCollision.collisionArea);
 	}
+	
 
 	// Draw Player
 	m_Window.draw(player.getSprite());
 	m_Window.draw(player.hitBox.collisionArea);
+	
 
-	// Draw Enemies
+	
+	// Draw Enemies 
+	for (int count = 0; count < MAXENEMIES; count++)
+	{
+		m_Window.draw(activeEnemy[count].getSprite());
+	}
 
 
 	// Draw HUD
@@ -48,16 +56,6 @@ void Engine::draw()
 		m_Window.draw(hud.textBL[count]);
 		m_Window.draw(hud.textBR[count]);
 	}
-	
-
-	level.selectedMap.CollisionData[0].identifier.getFillColor();
-	level.selectedMap.CollisionData[0].identifier.getCharacterSize();
-	level.selectedMap.CollisionData[0].identifier.getPosition();
-	level.selectedMap.CollisionData[0].identifier.getFont();
-	level.selectedMap.CollisionData[0].identifier.getString();
-	
-	
-	m_Window.draw(level.selectedMap.CollisionData[1].identifier);
 
 	// Show everything we have just drawn
 	m_Window.display();

@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Enumerations.h"
 #include "GeneralFunctions.h"
+#include "Enemy.h"
 
 void Level::loadMaps()
 {
@@ -24,10 +25,17 @@ void Level::loadMaps()
 		playground.CollisionData.resize(MAXCOLLISIONS);
 		playground.SlopeData.resize(MAXSLOPES);
 		playground.PlatformData.resize(MAXPLATFORMS);
+		playground.EnemyData.resize(MAXENEMIES);
+		playground.EnemySpawn.resize(MAXENEMIES);
 
 		// Spawn Location
 		playground.playerSpawn.x = bitConvert64(15.5);
 		playground.playerSpawn.y = bitConvert64(15);
+
+		playground.EnemyData[0] = grunt;
+		playground.EnemySpawn[0].x = bitConvert64(13.5);
+		playground.EnemySpawn[0].y = bitConvert64(15);
+
 
 		// Floor Collisions -- RED
 		playground.CollisionData[0].InitializeCollision(FLOOR, true, sf::Vector2f(0, 20), sf::Vector2f(28, 0));
@@ -40,22 +48,22 @@ void Level::loadMaps()
 
 
 		// Left Collisions -- GREEN
-		playground.CollisionData[100].InitializeCollision(LEFT_WALL, true, sf::Vector2f(4, 4), sf::Vector2f(0, 16));
-		playground.CollisionData[101].InitializeCollision(LEFT_WALL, true, sf::Vector2f(28, 20), sf::Vector2f(0, 4));
-		playground.CollisionData[102].InitializeCollision(LEFT_WALL, true, sf::Vector2f(38, 19), sf::Vector2f(0, 5));
+		playground.CollisionData[24].InitializeCollision(LEFT_WALL, true, sf::Vector2f(4, 4), sf::Vector2f(0, 16));
+		playground.CollisionData[25].InitializeCollision(LEFT_WALL, true, sf::Vector2f(28, 20), sf::Vector2f(0, 4));
+		playground.CollisionData[26].InitializeCollision(LEFT_WALL, true, sf::Vector2f(38, 19), sf::Vector2f(0, 5));
 
 		// Right Collisions -- BLUE
 		
-		playground.CollisionData[200].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(36, 19), sf::Vector2f(0, 5));
-		playground.CollisionData[201].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(46, 0), sf::Vector2f(0, 24));
-		playground.CollisionData[202].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 18), sf::Vector2f(0, 1));
-		playground.CollisionData[203].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 13), sf::Vector2f(0, 1));
+		playground.CollisionData[49].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(36, 19), sf::Vector2f(0, 5));
+		playground.CollisionData[50].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(46, 0), sf::Vector2f(0, 24));
+		playground.CollisionData[51].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 18), sf::Vector2f(0, 1));
+		playground.CollisionData[52].InitializeCollision(RIGHT_WALL, true, sf::Vector2f(42, 13), sf::Vector2f(0, 1));
 
 		// Ceiling Collisions -- YELLOW
 		
-		playground.CollisionData[301].InitializeCollision(CEILING, true, sf::Vector2f(42, 19), sf::Vector2f(4, 0));
-		playground.CollisionData[302].InitializeCollision(CEILING, true, sf::Vector2f(42, 14), sf::Vector2f(4, 0));
-		playground.CollisionData[303].InitializeCollision(CEILING, true, sf::Vector2f(4, 4), sf::Vector2f(42, 0));
+		playground.CollisionData[74].InitializeCollision(CEILING, true, sf::Vector2f(42, 19), sf::Vector2f(4, 0));
+		playground.CollisionData[75].InitializeCollision(CEILING, true, sf::Vector2f(42, 14), sf::Vector2f(4, 0));
+		playground.CollisionData[76].InitializeCollision(CEILING, true, sf::Vector2f(4, 4), sf::Vector2f(42, 0));
 
 
 		// Platform Collisions
@@ -73,5 +81,10 @@ void Level::loadMaps()
 		playground.SlopeData[3].InitializeSlope(LEFT, false, sf::Vector2f(30, 21), sf::Vector2f(1, 1));
 		playground.SlopeData[4].InitializeSlope(LEFT, false, sf::Vector2f(31, 22), sf::Vector2f(1, 1));
 		playground.SlopeData[5].InitializeSlope(LEFT, false, sf::Vector2f(32, 23), sf::Vector2f(1, 1));
+
+	
+	
+		
+		
 	}
 }

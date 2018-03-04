@@ -16,6 +16,7 @@ Player::Player()
 	//Set Collision Data
 	hitBox.collisionArea.setSize(sf::Vector2f(64, 64));
 	hitBox.collisionArea.setOrigin(sf::Vector2f(32, 32));
+
 	
 	//Set Default Position
 	position.x = 500;
@@ -44,7 +45,6 @@ Player::Player()
 
 	//Set Stats
 	moveSpeed = 7.0;
-	angle = 0;
 	jumpSpeed = 1.0;
 
 	jumpHeight = 128;
@@ -72,7 +72,7 @@ void Player::updateStage2()
 	reverseSprite();
 	if (compareState() == true)
 	{
-		attachAnimation(currentAnimation());
+		currentAnimatation = currentAnimationFunc();
 	}
 	current.setTextureRect(currentAnimatation.animate());
 	
@@ -116,12 +116,6 @@ void Player::spawn(Map map)
 
 
 //------------Sprite and Animation------------------------
-
-// binds a different animation to Player
-void Player::attachAnimation(Animation _new)
-{
-	currentAnimatation = _new;
-}
 
 // Returns Sprite so that it can be drawn
 sf::Sprite Player::getSprite()
@@ -201,7 +195,7 @@ void Player::stateDetector()
 }
 
 // Returns correct animation based on Complex State
-Animation Player::currentAnimation()
+Animation Player::currentAnimationFunc()
 {
 	
 	switch (currentState)
@@ -247,14 +241,12 @@ void Player::manager()
 {
 	if (movingL == true)
 	{
-		velocity.x -= cos(angle) * moveSpeed;
-		velocity.y += sin(angle) * moveSpeed;
+		velocity.x -= moveSpeed;
 	}
 
 	if (movingR == true)
 	{
-		velocity.x += cos(angle) * moveSpeed;
-		velocity.y -= sin(angle) * moveSpeed;
+		velocity.x += moveSpeed;
 	}
 
 	if (jumping == true)

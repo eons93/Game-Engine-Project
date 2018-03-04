@@ -13,7 +13,6 @@ private:
 
 	// Player's Stats
 	float moveSpeed;
-	float angle;
 	float jumpSpeed;
 
 	float jumpHeight;
@@ -43,16 +42,16 @@ public:
 
 	// Manages what to draw. 
 	void loadAnimations();
-	void attachAnimation(Animation _new);
 	void stateDetector();
 	Sprite getSprite();
 	sf::Vector2f getPosition();
-	Animation currentAnimation();
+	Animation currentAnimationFunc();
 	CollisionObject hitBox;
 
 
 	// Variables to Detect Player State
 	bool facing;
+	
 	bool jumping;
 	bool ducking;
 	bool rolling;

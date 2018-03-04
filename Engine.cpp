@@ -8,19 +8,22 @@
 #include "Enumerations.h"
 #include "GeneralFunctions.h"
 #include <string.h>
+#include "Enemy.h"
 
 Engine::Engine()
 {
 	// Inform class Sizes
-	std::cout << "Player Size:           " << sizeof(Player) << std::endl;
-	std::cout << "Map Size:              " << sizeof(Map) << std::endl;
-	std::cout << "Level Size:            " << sizeof(Level) << std::endl;
 	std::cout << "Engine Size:           " << sizeof(Engine) << std::endl;
-	std::cout << "Aniamtion Size:        " << sizeof(Animation) << std::endl;
+	std::cout << "HUD Size:              " << sizeof(HUD) << std::endl;
+	std::cout << "Level Size:            " << sizeof(Level) << std::endl;
+	std::cout << "Map Size:              " << sizeof(Map) << std::endl;
 	std::cout << "Collision Object Size: " << sizeof(CollisionObject) << std::endl;
 	std::cout << "Slope Object Size:     " << sizeof(SlopeObject) << std::endl;
 	std::cout << "Platform Ibject Size:  " << sizeof(PlatformObject) << std::endl;
-	std::cout << "HUD Size:              " << sizeof(HUD) << std::endl;
+	std::cout << "Aniamtion Size:        " << sizeof(Animation) << std::endl;
+	std::cout << "Player Size:           " << sizeof(Player) << std::endl;
+
+	activeEnemy.resize(MAXENEMIES);
 
 	// Get the screen resolution and create an SFML window and View
 	resolution.x = VideoMode::getDesktopMode().width;
@@ -33,25 +36,32 @@ Engine::Engine()
 		Style::Fullscreen);
 
 	// Load Level
+	level.loadAnimations();
+	level.loadEnemies();
 	level.loadMaps();
+
 	level.attachMap(level.playground);
 	level.attachTexture();
 	level.background.setSize(sf::Vector2f(resolution.x, resolution.y));
 	level.background.setOrigin(sf::Vector2f(resolution.x / 2, resolution.y / 2));
 	level.background.setPosition(sf::Vector2f(player.position.x, player.position.y));
 
+	// Load Enemies
+	for (int count = 0; count < MAXENEMIES; count++)
+	{
+		activeEnemy[count] = level.selectedMap.EnemyData[count];
+		activeEnemy[count].spawn(count, level.selectedMap);
+		activeEnemy[count].Update();
+		activeEnemy[count].currentState_Animation = activeEnemy[count].currentAnimationFunc();
+	}
+	
 	// Load Player
 	player.spawn(level.selectedMap);
 	player.loadAnimations();
-	player.attachAnimation(player.idle);
-
 	
-
 	playerCamera.setCenter(player.position);
 	playerCamera.setSize(resolution.x * 0.625, resolution.y * 0.625);
 	hud.attachCamera(playerCamera);
-
-	
 }
 
 void Engine::start()
@@ -67,6 +77,13 @@ void Engine::start()
 		// Make a fraction from the delta time
 		//float dtAsSeconds = dt.asSeconds();
 		
+		//std::cout << activeEnemy[0].getSprite().getTextureRect().left << " left" << std::endl;
+		//std::cout << activeEnemy[0].getSprite().getTextureRect().top << " top" << std::endl;
+		//std::cout << activeEnemy[0].getSprite().getTextureRect().width << " width" << std::endl;
+		std::cout << activeEnemy[0].currentState << std::endl;
+
+
+
 		input();
 		update();
 		draw();

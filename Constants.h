@@ -17,9 +17,10 @@ const bool HORIZONTAL(false);
 
 const float GRAVITY(1.0);
 
-const int MAXSLOPES(50);
-const int MAXCOLLISIONS(400);
-const int MAXPLATFORMS(50);
+const int MAXSLOPES(20);
+const int MAXCOLLISIONS(100);
+const int MAXPLATFORMS(30);
+const int MAXENEMIES(15);
 
 #endif
 

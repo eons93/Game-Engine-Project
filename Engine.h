@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "Enumerations.h"
 #include "HUD.h"
+#include "Enemy.h"
 
 using namespace sf;
 
@@ -19,6 +20,7 @@ private:
 	//Load Map
 	Map map;
 	sf::Event event;
+	std::vector<EnemyObject> activeEnemy;
 
 	// Load Level
 	Level level;
