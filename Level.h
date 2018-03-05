@@ -31,7 +31,6 @@ public:
 
 	// Preps maps to be used
 	void loadMaps();
-	void loadEnemies();
 	void loadAnimations();
 	Map selectedMap;
 
@@ -39,7 +38,7 @@ public:
 	Map playground;
 
 	// Enemies to Spawn
-	EnemyObject grunt;
+	
 
 	// Animations
 	Animation grunt_idle;

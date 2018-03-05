@@ -23,8 +23,7 @@ Engine::Engine()
 	std::cout << "Aniamtion Size:        " << sizeof(Animation) << std::endl;
 	std::cout << "Player Size:           " << sizeof(Player) << std::endl;
 
-	activeEnemy.resize(MAXENEMIES);
-
+	
 	// Get the screen resolution and create an SFML window and View
 	resolution.x = VideoMode::getDesktopMode().width;
 	resolution.y = VideoMode::getDesktopMode().height;
@@ -37,7 +36,6 @@ Engine::Engine()
 
 	// Load Level
 	level.loadAnimations();
-	level.loadEnemies();
 	level.loadMaps();
 
 	level.attachMap(level.playground);
@@ -46,14 +44,8 @@ Engine::Engine()
 	level.background.setOrigin(sf::Vector2f(resolution.x / 2, resolution.y / 2));
 	level.background.setPosition(sf::Vector2f(player.position.x, player.position.y));
 
-	// Load Enemies
-	for (int count = 0; count < MAXENEMIES; count++)
-	{
-		activeEnemy[count] = level.selectedMap.EnemyData[count];
-		activeEnemy[count].spawn(count, level.selectedMap);
-		activeEnemy[count].Update();
-		activeEnemy[count].currentState_Animation = activeEnemy[count].currentAnimationFunc();
-	}
+	enemy.idle = level.grunt_idle;
+	enemy.fall = level.grunt_fall;
 	
 	// Load Player
 	player.spawn(level.selectedMap);
@@ -80,8 +72,7 @@ void Engine::start()
 		//std::cout << activeEnemy[0].getSprite().getTextureRect().left << " left" << std::endl;
 		//std::cout << activeEnemy[0].getSprite().getTextureRect().top << " top" << std::endl;
 		//std::cout << activeEnemy[0].getSprite().getTextureRect().width << " width" << std::endl;
-		std::cout << activeEnemy[0].currentState << std::endl;
-
+		
 
 
 		input();

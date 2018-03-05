@@ -34,6 +34,7 @@ void Engine::draw()
 		m_Window.draw(level.selectedMap.PlatformData[count].rightCollision.collisionArea);
 	}
 	
+	m_Window.draw(enemy.getSprite());
 
 	// Draw Player
 	m_Window.draw(player.getSprite());
@@ -41,12 +42,7 @@ void Engine::draw()
 	
 
 	
-	// Draw Enemies 
-	for (int count = 0; count < MAXENEMIES; count++)
-	{
-		m_Window.draw(activeEnemy[count].getSprite());
-	}
-
+	
 
 	// Draw HUD
 	for (int count = 0; count < 20; count++)

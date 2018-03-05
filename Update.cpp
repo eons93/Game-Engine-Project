@@ -16,17 +16,9 @@ void Engine::update()
 	
 	// Detect Collision
 	level.detectCollisionPlayer(player);
-
+	level.detectCollisionEnemy(enemy);
 	
-	for (int count = 0; count < MAXENEMIES; count++)
-	{
-		level.detectCollisionEnemy(activeEnemy[count]);
-		activeEnemy[count].Update();
-	}
-
-	activeEnemy[0].velocity.x += 2;
-	activeEnemy[1].velocity.x += 2;
-
+	enemy.Update();
 
 	// Update Player and Camera
 	player.updateStage2();

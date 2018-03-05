@@ -10,8 +10,6 @@ EnemyObject::EnemyObject()
 {
 	name = "Blank";
 
-	currentSprite.setTexture(currentState_Animation.source);
-	currentSprite.setTextureRect(currentState_Animation.animate());
 	currentSprite.setOrigin(sf::Vector2f(32, 32));
 
 	position.x = 64 * 14.5;
@@ -33,8 +31,6 @@ EnemyObject::EnemyObject()
 	movingR = false;
 	currentState = GROUND_FACE;
 
-	currentSprite.setPosition(position);
-	currentState_Animation = currentAnimationFunc();
 }
 
 void EnemyObject::Update()
@@ -45,6 +41,7 @@ void EnemyObject::Update()
 	{
 		currentState_Animation = currentAnimationFunc();
 	}
+	currentSprite.setTexture(currentState_Animation.source);
 	currentSprite.setTextureRect(currentState_Animation.animate());
 
 	float dt = 0.5;
@@ -75,13 +72,14 @@ sf::Sprite EnemyObject::getSprite()
 	return currentSprite;
 }
 
+/*
 void EnemyObject::spawn(int ID, Map map)
 {
 	position.x = map.EnemySpawn[ID].x;
 	position.y = map.EnemySpawn[ID].y;
 
 	Update();
-}
+}*/
 
 void EnemyObject::stateDetector()
 {

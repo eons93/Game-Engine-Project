@@ -20,10 +20,11 @@ private:
 	//Load Map
 	Map map;
 	sf::Event event;
-	std::vector<EnemyObject> activeEnemy;
+
 
 	// Load Level
 	Level level;
+	EnemyObject enemy;
 
 	// Load Player
 	Player player;

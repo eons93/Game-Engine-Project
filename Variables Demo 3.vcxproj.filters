@@ -107,9 +107,6 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level_Enemies.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Level_Animations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -22,14 +22,13 @@ public:
 	std::vector<CollisionObject> CollisionData;
 	std::vector<SlopeObject> SlopeData;
 	std::vector<PlatformObject> PlatformData;
-	//EnemyObject EnemyData[MAXENEMIES];
+
 
 
 	//CollisionObject CollisionData[MAXCOLLISIONS];
 	//SlopeObject SlopeData[MAXSLOPES];
 	//PlatformObject PlatformData[MAXPLATFORMS];
-	std::vector<EnemyObject> EnemyData;
-	std::vector<sf::Vector2f> EnemySpawn;
+
 
 
 	// Maps Textures

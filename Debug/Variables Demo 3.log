@@ -1,2 +1,20 @@
-﻿  Level_Maps.cpp
+﻿  Update.cpp
+  Engine.cpp
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(28): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(29): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(33): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(55): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(92): warning C4305: '=': truncation from 'double' to 'float'
+  Enemy.cpp
+  Draw.cpp
+  Generating Code...
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\enemy.cpp(174): warning C4715: 'EnemyObject::currentAnimationFunc': not all control paths return a value
+  Compiling...
+  Main.cpp
+  Input.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  Map.cpp
+  Level_Maps.cpp
+  Level.cpp
   Variables Demo 3.vcxproj -> D:\Visual Studio Stuff\Projects\Variables Demo 3\Debug\Variables Demo 3.exe

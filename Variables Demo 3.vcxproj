@@ -177,7 +177,6 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Level_Animations.cpp" />
-    <ClCompile Include="Level_Enemies.cpp" />
     <ClCompile Include="Level_Maps.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />

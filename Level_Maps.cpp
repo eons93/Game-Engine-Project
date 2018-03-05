@@ -25,16 +25,12 @@ void Level::loadMaps()
 		playground.CollisionData.resize(MAXCOLLISIONS);
 		playground.SlopeData.resize(MAXSLOPES);
 		playground.PlatformData.resize(MAXPLATFORMS);
-		playground.EnemyData.resize(MAXENEMIES);
-		playground.EnemySpawn.resize(MAXENEMIES);
-
+		
 		// Spawn Location
 		playground.playerSpawn.x = bitConvert64(15.5);
 		playground.playerSpawn.y = bitConvert64(15);
 
-		playground.EnemyData[0] = grunt;
-		playground.EnemySpawn[0].x = bitConvert64(13.5);
-		playground.EnemySpawn[0].y = bitConvert64(15);
+		
 
 
 		// Floor Collisions -- RED
