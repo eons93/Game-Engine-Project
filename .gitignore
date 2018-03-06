@@ -1,0 +1,8 @@
+
+Debug/Engine.obj
+Debug/Animation.obj
+Debug/CollisionObject.obj
+*.obj
+*.log
+Debug/vc141.idb
+Debug/vc141.pdb
