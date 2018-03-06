@@ -9,35 +9,35 @@ Animation::Animation()
 }
 
 // Based on animation manipulation stats, returns frame desired.
-sf::IntRect Animation::animate()
+sf::IntRect Animation::Animate()
 {
 	// while the animation counter reaches certain values, 
 	// return the proper frame and increase counter
-	while (counter < frame1Marker)
+	while (int_Counter < int_Frame_Marker1)
 	{
-		counter++;
-		return frame1;
+		int_Counter++;
+		return rec_Frame1;
 	}
-	while (counter < frame2Marker)
+	while (int_Counter < int_Frame_Marker2)
 	{
-		counter++;
-		return frame2;
+		int_Counter++;
+		return rec_Frame2;
 	}
-	while (counter < frame3Marker)
+	while (int_Counter < int_Frame_Marker3)
 	{
-		counter++;
-		return frame3;
+		int_Counter++;
+		return rec_Frame3;
 	}
-	while (counter < frame4Marker)
+	while (int_Counter < int_Frame_Marker4)
 	{
-		counter++;
-		return frame4;
+		int_Counter++;
+		return rec_Frame4;
 	}
 
 	// When animation is over, reset.
-	if (counter == reset)
+	if (int_Counter == int_ResetValue)
 	{
-		counter = 0;
-		return frame1;
+		int_Counter = 0;
+		return rec_Frame1;
 	}
 }

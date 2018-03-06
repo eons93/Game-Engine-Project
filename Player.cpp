@@ -7,108 +7,102 @@
 Player::Player()
 {
 	// Load image to texture then apply to Player's Sprite
-	current.setTexture(currentAnimatation.source);
-	current.setTextureRect(currentAnimatation.animate());
+	spr_CurrentSprite.setTexture(ani_CurrentAnimatation.txu_Source);
+	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate());
 
 	//Set Origin
-	current.setOrigin(sf::Vector2f(32, 32));
+	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
 
-	//Set Collision Data
-	hitBox.collisionArea.setSize(sf::Vector2f(64, 64));
-	hitBox.collisionArea.setOrigin(sf::Vector2f(32, 32));
-
-	
 	//Set Default Position
-	position.x = 500;
-	position.y = 800;
-	velocity.x = 0;
-	velocity.y = 0;
-	maxX = 0;
-	minX = 0;
-	maxY = 0;
-	minY = 0;
+	vec_Position.x = 500;
+	vec_Position.y = 800;
+	vec_Velocity.x = 0;
+	vec_Velocity.y = 0;
+	flo_MaxX = 0;
+	flo_MinX = 0;
+	flo_MaxY = 0;
+	flo_MinY = 0;
 
 	//Set Default states
-	facing = RIGHT;
+	bol_Facing = RIGHT;
 	
-	jumping = false;
-	ducking = false;
-	rolling = false;
-	blocking = false;
-	falling = false;
-	shooting = false;
-	meleeing = false;
-	movingL = false;
-	movingR = false;
-	currentState = GROUND_FACE;
+	bol_Jumping = false;
+	bol_Ducking = false;
+	bol_Rolling = false;
+	bol_Blocking = false;
+	bol_Falling = false;
+	bol_Shooting = false;
+	bol_Meleeing = false;
+	bol_MovingL = false;
+	bol_MovingR = false;
+	cs_CurrentState = CS_GROUND_FACE;
 
 
 	//Set Stats
-	moveSpeed = 7.0;
-	jumpSpeed = 1.0;
+	flo_Move_Speed = 7.0;
+	flo_Jump_Speed = 1.0;
 
-	jumpHeight = 128;
-	jumpDuration = 30;
-	jumpCounter = 0;
-	canJump = true;
+	flo_JumpHeight = 128;
+	flo_JumpDuration = 30;
+	flo_JumpCounter = 0;
+	bol_CanJump = true;
 
-	rollDelay = 5;
-	rollDuration = 30;
-	rollCounter = 0;
-	rollMovement = 192;
+	int_RollDelay = 5;
+	int_RollDuration = 30;
+	int_RollCounter = 0;
+	flo_RollMovement = 192;
 }
 
 // Updates player stats
-void Player::updateStage1()
+void Player::UpdatePhase1()
 {
 	// Apply action effects
-	manager();
+	Manager();
 }
 
 // applies updated player stats
-void Player::updateStage2()
+void Player::UpdatePhase2()
 {
-	stateDetector();
-	reverseSprite();
-	if (compareState() == true)
+	StateDetector();
+	ReverseSprite();
+	if (CompareState() == true)
 	{
-		currentAnimatation = currentAnimationFunc();
+		ani_CurrentAnimatation = CurrentAnimationFunc();
 	}
-	current.setTextureRect(currentAnimatation.animate());
+	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate());
 	
 	float dt = 0.5;
 
-	if (falling == true)
+	if (bol_Falling == true)
 	{
-		velocity.y += GRAVITY * dt;
-		position.x += velocity.x * dt;
-		position.y += velocity.y * dt;
+		vec_Velocity.y += GRAVITY * dt;
+		vec_Position.x += vec_Velocity.x * dt;
+		vec_Position.y += vec_Velocity.y * dt;
 
 	}
 	else
 	{
-		position.x += velocity.x * dt;
-		position.y += velocity.y * dt;
+		vec_Position.x += vec_Velocity.x * dt;
+		vec_Position.y += vec_Velocity.y * dt;
 	}
-	velocity.x = 0;
+	vec_Velocity.x = 0;
 	
-	checkMinMax(position, velocity);
+	CheckMinMax(vec_Position, vec_Velocity);
 
-	current.setPosition(position);
-	hitBox.collisionArea.setPosition(position.x, position.y);
-	copyState(currentState);
+	spr_CurrentSprite.setPosition(vec_Position);
+	CopyState(cs_CurrentState);
 
 	
-	falling = true;
+	bol_Falling = true;
 	
 }
 
-void Player::spawn(Map map)
+void Player::Spawn(Map map)
 {
-	position.x = map.playerSpawn.x;
-	position.y = map.playerSpawn.y;
+	vec_Position.x = map.vec_PlayerSpawn.x;
+	vec_Position.y = map.vec_PlayerSpawn.y;
 
-	resetMinMax(position, velocity);
+	ResetMinMax(vec_Position, vec_Velocity);
 	
 }
 
@@ -118,32 +112,32 @@ void Player::spawn(Map map)
 //------------Sprite and Animation------------------------
 
 // Returns Sprite so that it can be drawn
-sf::Sprite Player::getSprite()
+sf::Sprite Player::GetSprite()
 {
-	return current;
+	return spr_CurrentSprite;
 }
 
-sf::Vector2f Player::getPosition()
+sf::Vector2f Player::GetPosition()
 {
-	return current.getPosition();
+	return spr_CurrentSprite.getPosition();
 }
 
 //Flips Player Sprite if facing left. 
-void Player::reverseSprite()
+void Player::ReverseSprite()
 {
-	switch (facing) 
+	switch (bol_Facing) 
 	{
 		case LEFT:
-			current.setScale(-1.f, 1.f);
+			spr_CurrentSprite.setScale(-1.f, 1.f);
 			break;
 		case RIGHT:
-			current.setScale(1.f, 1.f);
+			spr_CurrentSprite.setScale(1.f, 1.f);
 			break;
 	}
 }
 
 // Analyzes state variables to assign Complex State
-void Player::stateDetector()
+void Player::StateDetector()
 {
 	//Check Order:
 		//Shoot (jump/fall, ground), 
@@ -154,109 +148,109 @@ void Player::stateDetector()
 		//Block, 
 		//IDLE
 
-	if (movingL || movingR == true)
+	if (bol_MovingL || bol_MovingR == true)
 	{
-		if (jumping == true)
+		if (bol_Jumping == true)
 		{
-			currentState = C_JUMP;
+			cs_CurrentState = CS_JUMP;
 		}
-		else if (falling == true)
+		else if (bol_Falling == true)
 		{
-			currentState = AIR;
+			cs_CurrentState = CS_AIR;
 		}
 		else
 		{
-			currentState = GROUND_MOVING;
+			cs_CurrentState = CS_GROUND_MOVING;
 		}
 	}
-	else if (ducking == true)
+	else if (bol_Ducking == true)
 	{
-		if (rolling == true)
+		if (bol_Rolling == true)
 		{
-			currentState = C_ROLL;
+			cs_CurrentState = CS_ROLL;
 		}
 		else
 		{
-			currentState = C_DUCK;
+			cs_CurrentState = CS_DUCK;
 		}
 	}
-	else if (jumping == true)
+	else if (bol_Jumping == true)
 	{
-		currentState = C_JUMP;
+		cs_CurrentState = CS_JUMP;
 	}
-	else if (falling == true)
+	else if (bol_Falling == true)
 	{
-		currentState = AIR;
+		cs_CurrentState = CS_AIR;
 	}
 	else
 	{
-		currentState = GROUND_FACE;
+		cs_CurrentState = CS_GROUND_FACE;
 	}
 }
 
 // Returns correct animation based on Complex State
-Animation Player::currentAnimationFunc()
+Animation Player::CurrentAnimationFunc()
 {
 	
-	switch (currentState)
+	switch (cs_CurrentState)
 	{
-	case C_BLOCK:
-		return block;
+	case CS_BLOCK:
+		return ani_Block;
 		break;
-	case C_JUMP:
-		return jump;
+	case CS_JUMP:
+		return ani_Jump;
 		break;
-	case C_DUCK:
-		return duck;
+	case CS_DUCK:
+		return ani_Duck;
 		break;
-	case C_ROLL:
-		return roll;
+	case CS_ROLL:
+		return ani_Roll;
 		break;
-	case GROUND_FACE:
-		return idle;
+	case CS_GROUND_FACE:
+		return ani_Idle;
 		break;
-	case GROUND_MOVING:
-		return run;
+	case CS_GROUND_MOVING:
+		return ani_Run;
 		break;
-	case GROUND_SHOOT:
-		return shoot;
+	case CS_GROUND_SHOOT:
+		return ani_Shoot;
 		break;
-	case GROUND_MELEE:
-		return melee;
+	case CS_GROUND_MELEE:
+		return ani_Melee;
 		break;
-	case AIR:
-		return fall;
+	case CS_AIR:
+		return ani_Fall;
 		break;
-	case AIR_SHOOT:
-		return airShoot;
+	case CS_AIR_SHOOT:
+		return ani_AirShoot;
 		break;
-	case AIR_MELEE:
-		return airMelee;
+	case CS_AIR_MELEE:
+		return ani_AirMelee;
 		break;
 	}
 }
 
 // changes player information based on State
-void Player::manager()
+void Player::Manager()
 {
-	if (movingL == true)
+	if (bol_MovingL == true)
 	{
-		velocity.x -= moveSpeed;
+		vec_Velocity.x -= flo_Move_Speed;
 	}
 
-	if (movingR == true)
+	if (bol_MovingR == true)
 	{
-		velocity.x += moveSpeed;
+		vec_Velocity.x += flo_Move_Speed;
 	}
 
-	if (jumping == true)
+	if (bol_Jumping == true)
 	{
-		processJump();
+		ProcessJump();
 	}
 
-	if (rolling == true)
+	if (bol_Rolling == true)
 	{
-		processRoll();
+		ProcessRoll();
 	}
 }
 
@@ -265,15 +259,15 @@ void Player::manager()
 //---------------Misc Functions-----------------------------
 
 
-void Player::copyState(ComplexState holder)
+void Player::CopyState(ComplexState holder)
 {
-	stateHolder = holder;
-	facingHolder = facing;
+	cs_StateHolder = holder;
+	bol_FacingHolder = bol_Facing;
 }
 
-bool Player::compareState()
+bool Player::CompareState()
 {
-	if (stateHolder != currentState)
+	if (cs_StateHolder != cs_CurrentState)
 	{
 		return true;
 	}
@@ -283,59 +277,59 @@ bool Player::compareState()
 	}
 }
 
-void Player::checkMinMax(sf::Vector2f position, sf::Vector2f velocity)
+void Player::CheckMinMax(sf::Vector2f position, sf::Vector2f velocity)
 {
-	if (position.x < minX)
+	if (position.x < flo_MinX)
 	{
-		minX = position.x;
+		flo_MinX = position.x;
 	}
 
-	if (position.x > maxX)
+	if (position.x > flo_MaxX)
 	{
-		maxX = position.x;
+		flo_MaxX = position.x;
 	}
 
-	if (position.y < minY)
+	if (position.y < flo_MinY)
 	{
-		minY = position.y;
+		flo_MinY = position.y;
 	}
 
-	if (position.y > maxY)
+	if (position.y > flo_MaxY)
 	{
-		maxY = position.y;
+		flo_MaxY = position.y;
 	}
 
 
-	if (velocity.x < minVelX)
+	if (velocity.x < flo_MinVelX)
 	{
-		minVelX = velocity.x;
+		flo_MinVelX = velocity.x;
 	}
 
-	if (velocity.x > maxVelX)
+	if (velocity.x > flo_MaxVelX)
 	{
-		maxVelX = velocity.x;
+		flo_MaxVelX = velocity.x;
 	}
 
-	if (velocity.y < minVelY)
+	if (velocity.y < flo_MinVelY)
 	{
-		minVelY = velocity.y;
+		flo_MinVelY = velocity.y;
 	}
 
-	if (velocity.y > maxVelY)
+	if (velocity.y > flo_MaxVelY)
 	{
-		maxVelY = velocity.y;
+		flo_MaxVelY = velocity.y;
 	}
 }
 
-void Player::resetMinMax(sf::Vector2f position, sf::Vector2f velocity)
+void Player::ResetMinMax(sf::Vector2f position, sf::Vector2f velocity)
 {
-	minX = position.x;
-	maxX = position.x;
-	minY = position.y;
-	maxY = position.y;
+	flo_MinX = position.x;
+	flo_MaxX = position.x;
+	flo_MinY = position.y;
+	flo_MaxY = position.y;
 
-	minVelX = 0;
-	minVelY = 0;
-	maxVelX = 0;
-	maxVelY = 0;
+	flo_MinVelX = 0;
+	flo_MinVelY = 0;
+	flo_MaxVelX = 0;
+	flo_MaxVelY = 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 #include "CollisionObject.h"
+#include "Animation.h"
 
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
@@ -21,6 +22,9 @@ const int MAXSLOPES(20);
 const int MAXCOLLISIONS(100);
 const int MAXPLATFORMS(30);
 const int MAXENEMIES(15);
+
+
+
 
 #endif
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
 
-std::string stringConvert(int value);
+std::string StringConvert(int value);
 
-float bitConvert64(float input);
+float BitConvert64(float input);

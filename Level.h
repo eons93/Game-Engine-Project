@@ -17,30 +17,30 @@ public:
 	Level();
 
 	// Loads Level selected
-	void attachTexture();
-	void attachMap(Map map);
+	//void attachTexture();
+	//void attachMap(Map map);
 	
 
 	// Update Functions
-	void detectCollisionPlayer(Player &Lplayer);
-	void detectCollisionEnemy(EnemyObject &enemy);
+	//void detectCollisionPlayer(Player &Lplayer);
+	//void detectCollisionEnemy(EnemyObject &enemy);
 	
 	// Holds selected map's Entities
-	sf::RectangleShape background;
-	sf::Sprite levelStructure;
+	//sf::RectangleShape background;
+	//sf::Sprite levelStructure;
 
 	// Preps maps to be used
-	void loadMaps();
-	void loadAnimations();
-	Map selectedMap;
+	// void loadMaps();
+	//void loadAnimations();
+	//Map selectedMap;
 
 	// Maps to choose from
-	Map playground;
+	//Map playground;
 
 	// Enemies to Spawn
 	
 
 	// Animations
-	Animation grunt_idle;
-	Animation grunt_fall;
+	//Animation grunt_idle;
+	//Animation grunt_fall;
 };

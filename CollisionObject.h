@@ -11,15 +11,15 @@ private:
 
 public:
 	CollisionObject();
+
 	void InitializeCollision(PlatformType platformT, bool stopper, sf::Vector2f position, sf::Vector2f size);
 
 	//collision data
-	sf::RectangleShape collisionArea;	// Physical Representation
-	bool barrier;
-	PlatformType type;					// Which surface
-	bool orientation;					// Horizontal or Verticle
+	sf::RectangleShape rs_CollisionArea;	
+	bool bol_Barrier;
+	PlatformType pt_Type;					
 
-	sf::Text identifier;
+	sf::Text txt_Identifier;
 
 };
 
@@ -31,15 +31,15 @@ public:
 	SlopeObject();
 	void InitializeSlope(bool direction, bool invert, sf::Vector2f position, sf::Vector2f size);
 
-	CollisionObject topCollision;
-	CollisionObject bottomCollision;
-	CollisionObject leftCollision;
-	CollisionObject rightCollision;
+	CollisionObject col_TopCollision;
+	CollisionObject col_BottomCollision;
+	CollisionObject col_LeftCollision;
+	CollisionObject col_RightCollision;
 
-	float slope;
+	float flo_Slope;
 
-	bool left_right;
-	bool inverted;
+	bool bol_LeftorRight;
+	bool bol_Inverted;
 };
 
 class PlatformObject
@@ -50,11 +50,11 @@ public:
 	PlatformObject();
 	void InitializePlatform(sf::Vector2f position, sf::Vector2f size);
 
-	sf::RectangleShape platform;
+	sf::RectangleShape rs_Platform;
 
-	CollisionObject topCollision;
-	CollisionObject bottomCollision;
-	CollisionObject leftCollision;
-	CollisionObject rightCollision;
+	CollisionObject col_TopCollision;
+	CollisionObject col_BottomCollision;
+	CollisionObject col_LeftCollision;
+	CollisionObject col_RightCollision;
 };
 

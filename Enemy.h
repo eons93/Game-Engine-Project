@@ -13,46 +13,47 @@ class EnemyObject
 {
 private:
 	
-
-
 public:
 	EnemyObject();
 
-	std::string name;
+	std::string str_Name;
+	sf::Font fon_Enemy;
+	sf::Text txt_Name;
 
-	sf::Vector2f position;
-	sf::Vector2f velocity;
+	sf::Vector2f vec_Position;
+	sf::Vector2f vec_Velocity;
 
-	void spawn(int ID, Map map);
+	sf::Sprite GetSprite();
+	void Spawn(int ID, Map map);
 
-	Animation currentAnimationFunc();
-	void reverseSprite();
-	sf::Sprite currentSprite;
-	Animation currentState_Animation;
-	Animation idle;
-	Animation run;
-	Animation fall;
+	// Regulate what to Draw
+	Animation CurrentAnimationFunc();
+	void ReverseSprite();
+	sf::Sprite spr_CurrentSprite;
+	Animation ani_Current_State_Animation;
+	Animation ani_Idle;
+	Animation ani_Run;
+	Animation ani_Fall;
 	
-	void stateDetector();
-	void copyState(ComplexState holder);
-	bool compareState();
-	ComplexState stateHolder;
-	bool facingHolder;
+	// Regulate State
+	void StateDetector();
+	void CopyState(ComplexState holder);
+	bool CompareState();
+	ComplexState cs_StateHolder;
+	bool bol_FacingHolder;
 
-	bool facing;
-
-	bool jumping;
-	bool ducking;
-	bool rolling;
-	bool blocking;
-	bool falling;
-	bool shooting;
-	bool meleeing;
-	bool movingL;
-	bool movingR;
-	ComplexState currentState;
+	// Factors of State
+	bool bol_Facing;
+	bool bol_Jumping;
+	bool bol_Ducking;
+	bool bol_Rolling;
+	bool bol_Blocking;
+	bool bol_Falling;
+	bool bol_Shooting;
+	bool bol_Meleeing;
+	bool bol_MovingL;
+	bool bol_MovingR;
+	ComplexState cs_CurrentState;
 
 	void Update();
-
-	sf::Sprite getSprite();
 };

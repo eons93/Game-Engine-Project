@@ -3,13 +3,13 @@
 #include "Player.h"
 #include <iostream>
 
-void Engine::input()
+void Engine::Input()
 {
 	
 		// Resets Position/Velocity Data
 		if (Keyboard::isKeyPressed(Keyboard::H))
 		{
-			player.resetMinMax(player.position, player.velocity);
+			player.ResetMinMax(player.vec_Position, player.vec_Velocity);
 		}
 
 		// Handle the player quitting
@@ -22,45 +22,45 @@ void Engine::input()
 		// Handle the player moving Left/Right
 		if (Keyboard::isKeyPressed(Keyboard::A))
 		{
-			player.moveLeft();
+			player.MoveLeft();
 		}
 		else
 		{
-			player.stopLeft();
+			player.StopLeft();
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::D))
 		{
-			player.moveRight();
+			player.MoveRight();
 		}
 		else
 		{
-			player.stopRight();
+			player.StopRight();
 		}
 
 		// Handle Player Duck and Roll
-		if (Keyboard::isKeyPressed(Keyboard::S) && player.jumping == false)
+		if (Keyboard::isKeyPressed(Keyboard::S) && player.bol_Jumping == false)
 		{
-			player.engageDuck();
+			player.EngageDuck();
 		}
 		else
 		{
-			player.disengageDuck();
+			player.DisengageDuck();
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Left) && (player.ducking == true && player.rolling == false))
+		if (Keyboard::isKeyPressed(Keyboard::Left) && (player.bol_Ducking == true && player.bol_Rolling == false))
 		{
-			player.engageLeftRoll();
+			player.EngageLeftRoll();
 		}
-		else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.ducking == true && player.rolling == false))
+		else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.bol_Ducking == true && player.bol_Rolling == false))
 		{
-			player.engageRightRoll();
+			player.EngageRightRoll();
 		}
 
 
 		// Handle Player Jumping
-		if (Keyboard::isKeyPressed(Keyboard::W) && player.canJump == true)
+		if (Keyboard::isKeyPressed(Keyboard::W) && player.bol_CanJump == true)
 		{
-			player.engageJump();
+			player.EngageJump();
 		}
 		
 }

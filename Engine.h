@@ -1,7 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "Level.h"
 #include "Map.h"
 #include "Enumerations.h"
 #include "HUD.h"
@@ -15,25 +14,32 @@ private:
 
 	// A regular RenderWindow
 	RenderWindow m_Window;
-	Vector2f resolution;
+	Vector2f Resolution;
 
-	//Load Map
-	Map map;
-	sf::Event event;
+	// Holders
+	std::vector<EnemyObject> ene_Spawned;
+	Map map_Selected;
+	sf::RectangleShape rs_Background;
+	sf::Sprite spr_LevelStructure;
 
+	//Loaders
+	void LoadAnimations();
+	void LoadMaps();
+	void LoadEnemies();
 
-	// Load Level
-	Level level;
-	EnemyObject enemy;
+	//Attachers
+	void AttachMapEnemies();
+	void AttachMap(Map map);
+	void AttachTexture();
 
 	// Load Player
 	Player player;
 	HUD hud;
-	sf::View playerCamera;
-	sf::Vector2f playerLocation;
+	sf::View vew_PlayerCamera;
+	sf::Vector2f vec_PlayerLocation;
 
 	// Load FPS Limiter Parts
-	void limiterFPS();
+	void LimiterFPS();
 	sf::Clock frameClock;
 	sf::Clock secondsClock;
 	sf::Time timeperFrame;
@@ -44,11 +50,25 @@ private:
 	bool controlConnect;
 
 	// Private functions for internal use only
-	void input();
-	void update();
-	void draw();
+	void Input();
+	void Update();
+	void Draw();
 
-	void updateCamera();
+	// Update Functions
+	void UpdateCamera();
+	void DetectCollisionPlayer(Player &Lplayer);
+	void DetectCollisionEnemy(EnemyObject &enemy);
+
+	//Maps
+	Map map_TestChamber;
+
+	//Animations
+	Animation ani_GruntIdle;
+	Animation ani_GruntFall;
+
+	//Enemies
+	EnemyObject ene_Grunt;
+
 
 public:
 	// The Engine constructor

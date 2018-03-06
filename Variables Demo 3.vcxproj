@@ -160,7 +160,6 @@
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="GeneralFunctions.h" />
     <ClInclude Include="HUD.h" />
-    <ClInclude Include="Level.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="stdafx.h" />
@@ -172,12 +171,12 @@
     <ClCompile Include="Draw.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Engine_Enemies.cpp" />
     <ClCompile Include="GeneralFunctions.cpp" />
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Level.cpp" />
-    <ClCompile Include="Level_Animations.cpp" />
-    <ClCompile Include="Level_Maps.cpp" />
+    <ClCompile Include="Engine_Animations.cpp" />
+    <ClCompile Include="Engine_Maps.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />

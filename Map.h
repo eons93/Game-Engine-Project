@@ -6,7 +6,7 @@
 #include "Enemy.h"
 
 
-class EnemyObject;
+//class EnemyObject;
 
 using namespace sf;
 
@@ -19,24 +19,18 @@ public:
 	Map();
 
 	// Maps Physical Information
-	std::vector<CollisionObject> CollisionData;
-	std::vector<SlopeObject> SlopeData;
-	std::vector<PlatformObject> PlatformData;
-
-
-
-	//CollisionObject CollisionData[MAXCOLLISIONS];
-	//SlopeObject SlopeData[MAXSLOPES];
-	//PlatformObject PlatformData[MAXPLATFORMS];
-
-
+	std::vector<CollisionObject> col_CollisionData;
+	std::vector<SlopeObject> slo_SlopeData;
+	std::vector<PlatformObject> pla_PlatformData;
+	std::vector<EnemyType> et_EnemyData;
+	std::vector<sf::Vector2f> vec_EnemySpawn;
 
 	// Maps Textures
-	sf::Texture bgImage;
-	sf::Texture levelImage;
+	sf::Texture txu_BackgroundImage;
+	sf::Texture txu_LevelImage;
 
 	// Spawn Points
-	sf::Vector2f playerSpawn;
+	sf::Vector2f vec_PlayerSpawn;
 	
 
 };

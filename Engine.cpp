@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine.h"
 #include "Player.h"
-#include "Level.h"
 #include "Map.h"
 #include <iostream>
 #include "Constants.h"
@@ -15,7 +14,6 @@ Engine::Engine()
 	// Inform class Sizes
 	std::cout << "Engine Size:           " << sizeof(Engine) << std::endl;
 	std::cout << "HUD Size:              " << sizeof(HUD) << std::endl;
-	std::cout << "Level Size:            " << sizeof(Level) << std::endl;
 	std::cout << "Map Size:              " << sizeof(Map) << std::endl;
 	std::cout << "Collision Object Size: " << sizeof(CollisionObject) << std::endl;
 	std::cout << "Slope Object Size:     " << sizeof(SlopeObject) << std::endl;
@@ -23,37 +21,38 @@ Engine::Engine()
 	std::cout << "Aniamtion Size:        " << sizeof(Animation) << std::endl;
 	std::cout << "Player Size:           " << sizeof(Player) << std::endl;
 
-	
+	ene_Spawned.resize(MAXENEMIES);
+
 	// Get the screen resolution and create an SFML window and View
-	resolution.x = VideoMode::getDesktopMode().width;
-	resolution.y = VideoMode::getDesktopMode().height;
+	Resolution.x = VideoMode::getDesktopMode().width;
+	Resolution.y = VideoMode::getDesktopMode().height;
 	
 	frameCounter = 0;
 
-	m_Window.create(VideoMode(resolution.x, resolution.y),
+	m_Window.create(VideoMode(Resolution.x, Resolution.y),
 		"Game Engine",
 		Style::Fullscreen);
 
 	// Load Level
-	level.loadAnimations();
-	level.loadMaps();
+	LoadAnimations();
+	LoadMaps();
+	LoadEnemies();
+	AttachMap(map_TestChamber);
+	AttachTexture();
+	AttachMapEnemies();
+	rs_Background.setSize(sf::Vector2f(Resolution.x, Resolution.y));
+	rs_Background.setOrigin(sf::Vector2f(Resolution.x / 2, Resolution.y / 2));
+	rs_Background.setPosition(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
 
-	level.attachMap(level.playground);
-	level.attachTexture();
-	level.background.setSize(sf::Vector2f(resolution.x, resolution.y));
-	level.background.setOrigin(sf::Vector2f(resolution.x / 2, resolution.y / 2));
-	level.background.setPosition(sf::Vector2f(player.position.x, player.position.y));
-
-	enemy.idle = level.grunt_idle;
-	enemy.fall = level.grunt_fall;
+	
 	
 	// Load Player
-	player.spawn(level.selectedMap);
-	player.loadAnimations();
+	player.Spawn(map_Selected);
+	player.LoadAnimations();
 	
-	playerCamera.setCenter(player.position);
-	playerCamera.setSize(resolution.x * 0.625, resolution.y * 0.625);
-	hud.attachCamera(playerCamera);
+	vew_PlayerCamera.setCenter(player.vec_Position);
+	vew_PlayerCamera.setSize(Resolution.x * 0.625, Resolution.y * 0.625);
+	hud.AttachCamera(vew_PlayerCamera);
 }
 
 void Engine::start()
@@ -69,20 +68,27 @@ void Engine::start()
 		// Make a fraction from the delta time
 		//float dtAsSeconds = dt.asSeconds();
 		
-		//std::cout << activeEnemy[0].getSprite().getTextureRect().left << " left" << std::endl;
-		//std::cout << activeEnemy[0].getSprite().getTextureRect().top << " top" << std::endl;
-		//std::cout << activeEnemy[0].getSprite().getTextureRect().width << " width" << std::endl;
-		
-
-
-		input();
-		update();
-		draw();
-		limiterFPS();
+		Input();
+		Update();
+		Draw();
+		LimiterFPS();
 	}
 }
 
-void Engine::limiterFPS()
+void Engine::AttachMap(Map map)
+{
+	// Attach input map to be the selected map
+	map_Selected = map;
+}
+
+void Engine::AttachTexture()
+{
+	rs_Background.setTexture(&map_Selected.txu_BackgroundImage);
+	spr_LevelStructure.setTexture(map_Selected.txu_LevelImage);
+}
+
+
+void Engine::LimiterFPS()
 {
 	
 retry:
@@ -99,19 +105,30 @@ retry:
 	frameClock.restart();
 	if (secondsChecker.asMilliseconds() >= 1000)
 	{
-		//std::cout << frameCounter << std::endl;
 		frameCounter = 0;
 		secondsClock.restart();
 	}
 }
 
-void Engine::updateCamera()
+void Engine::UpdateCamera()
 {
+	rs_Background.setPosition(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
 
-	level.background.setPosition(sf::Vector2f(player.position.x, player.position.y));
+	m_Window.setView(vew_PlayerCamera);
+	vew_PlayerCamera.setCenter(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
+}
 
-	m_Window.setView(playerCamera);
-	playerCamera.setCenter(sf::Vector2f(player.position.x, player.position.y));
-	
-
+void Engine::AttachMapEnemies()
+{
+	for (int count = 0; count < MAXENEMIES; count++)
+	{
+		switch (map_Selected.et_EnemyData[count])
+		{
+		case ET_GRUNT:
+			ene_Spawned[count] = ene_Grunt;
+			break;
+		}
+		
+		ene_Spawned[count].Spawn(count, map_Selected);
+	}
 }

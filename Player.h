@@ -12,116 +12,111 @@ class Player
 private:
 
 	// Player's Stats
-	float moveSpeed;
-	float jumpSpeed;
+	float flo_Move_Speed;
+	float flo_Jump_Speed;
 
-	float jumpHeight;
-	int jumpDuration;
-	int jumpCounter;
+	// Jump Action Stats
+	float flo_JumpHeight;
+	int flo_JumpDuration;
+	int flo_JumpCounter;
 	
-
-	bool rollFaceHolder;
-	int rollDelay;
-	int rollDuration;
-	int rollCounter;
-	float rollMovement;
+	// Roll Action Stats
+	bool bol_RollFaceHolder;
+	int int_RollDelay;
+	int int_RollDuration;
+	int int_RollCounter;
+	float flo_RollMovement;
 	
 	// Manages what to draw
-	sf::IntRect selection;
-	sf::Sprite current;
-	sf::Texture texture;
-	Animation currentAnimatation;
+	sf::IntRect rec_Selection;
+	sf::Sprite spr_CurrentSprite;
+	sf::Texture txu_Texture;
+	Animation ani_CurrentAnimatation;
 
-	void reverseSprite();
+	void ReverseSprite();
 
 	//computes what the player class needs to do
-	void manager();
+	void Manager();
 	
 public:
 	Player();
 
 	// Manages what to draw. 
-	void loadAnimations();
-	void stateDetector();
-	Sprite getSprite();
-	sf::Vector2f getPosition();
-	Animation currentAnimationFunc();
-	CollisionObject hitBox;
-
+	void LoadAnimations();
+	void StateDetector();
+	Sprite GetSprite();
+	sf::Vector2f GetPosition();
+	Animation CurrentAnimationFunc();
 
 	// Variables to Detect Player State
-	bool facing;
-	
-	bool jumping;
-	bool ducking;
-	bool rolling;
-	bool blocking;
-	bool falling;
-	bool shooting;
-	bool meleeing;
-	bool movingL;
-	bool movingR;
-	ComplexState currentState;
+	bool bol_Facing;
+	bool bol_Jumping;
+	bool bol_Ducking;
+	bool bol_Rolling;
+	bool bol_Blocking;
+	bool bol_Falling;
+	bool bol_Shooting;
+	bool bol_Meleeing;
+	bool bol_MovingL;
+	bool bol_MovingR;
+	ComplexState cs_CurrentState;
 
 	// Manages States
-	void copyState(ComplexState holder);
-	bool compareState();
-	ComplexState stateHolder;
-	bool facingHolder;
+	void CopyState(ComplexState holder);
+	bool CompareState();
+	ComplexState cs_StateHolder;
+	bool bol_FacingHolder;
 
 	// Player Animations
-	Animation idle;
-	Animation run;
-	Animation shoot;
-	Animation melee;
-	Animation airShoot;
-	Animation airMelee;
-	Animation jump;
-	Animation fall;
-	Animation roll;
-	Animation duck;
-	Animation block;
+	Animation ani_Idle;
+	Animation ani_Run;
+	Animation ani_Shoot;
+	Animation ani_Melee;
+	Animation ani_AirShoot;
+	Animation ani_AirMelee;
+	Animation ani_Jump;
+	Animation ani_Fall;
+	Animation ani_Roll;
+	Animation ani_Duck;
+	Animation ani_Block;
 
-	bool canJump;
+	bool bol_CanJump;
 
 	// Misc Stats
-	sf::Vector2f position;
-	sf::Vector2f velocity;
-	void spawn(Map map);
-	float maxX;
-	float maxY;
-	float minX;
-	float minY;
-	float minVelX;
-	float maxVelX;
-	float minVelY;
-	float maxVelY;
-	void checkMinMax(sf::Vector2f position, sf::Vector2f velocity);
-	void resetMinMax(sf::Vector2f position, sf::Vector2f velocity);
+	sf::Vector2f vec_Position;
+	sf::Vector2f vec_Velocity;
+	void Spawn(Map map);
+	float flo_MaxX;
+	float flo_MaxY;
+	float flo_MinX;
+	float flo_MinY;
+	float flo_MinVelX;
+	float flo_MaxVelX;
+	float flo_MinVelY;
+	float flo_MaxVelY;
+	void CheckMinMax(sf::Vector2f position, sf::Vector2f velocity);
+	void ResetMinMax(sf::Vector2f position, sf::Vector2f velocity);
 
 
 	//Player Actions
-	void moveRight();
-	void moveLeft();
-	void stopRight();
-	void stopLeft();
+	void MoveRight();
+	void MoveLeft();
+	void StopRight();
+	void StopLeft();
 
-	void engageJump();
-	void processJump();
-	void disengageJump();
+	void EngageJump();
+	void ProcessJump();
+	void DisengageJump();
 
-	void engageDuck();
-	void disengageDuck();
+	void EngageDuck();
+	void DisengageDuck();
 
-	void engageLeftRoll();
-	void engageRightRoll();
-	void processRoll();
+	void EngageLeftRoll();
+	void EngageRightRoll();
+	void ProcessRoll();
 	void DisengageRoll();
 
 	//Updater
-	void updateStage1();
-	void updateStage2();
-
-	
-
+	void UpdatePhase1();
+	void UpdatePhase2();
 };
