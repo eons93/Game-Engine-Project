@@ -63,10 +63,15 @@ private:
 	Map map_TestChamber;
 
 	//Animations
+	Animation ani_EliteIdle;
+	Animation ani_EliteFall;
+	Animation ani_EliteRun;
 	Animation ani_GruntIdle;
 	Animation ani_GruntFall;
+	Animation ani_GruntRun;
 
 	//Enemies
+	EnemyObject ene_Elite;
 	EnemyObject ene_Grunt;
 
 

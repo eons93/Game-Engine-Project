@@ -30,28 +30,28 @@ void Engine::LoadMaps()
 		
 		// Spawn Location
 		map_TestChamber.vec_PlayerSpawn.x = BitConvert64(16.5);
-		map_TestChamber.vec_PlayerSpawn.y = BitConvert64(17);
+		map_TestChamber.vec_PlayerSpawn.y = BitConvert64(19);
 
 		// Enemy Information
 		map_TestChamber.et_EnemyData[0] = ET_GRUNT;
 		map_TestChamber.vec_EnemySpawn[0].x = BitConvert64(4.5);
-		map_TestChamber.vec_EnemySpawn[0].y = BitConvert64(17);
+		map_TestChamber.vec_EnemySpawn[0].y = BitConvert64(15);
 
-		map_TestChamber.et_EnemyData[1] = ET_GRUNT;
+		map_TestChamber.et_EnemyData[1] = ET_ELITE;
 		map_TestChamber.vec_EnemySpawn[1].x = BitConvert64(6.5);
-		map_TestChamber.vec_EnemySpawn[1].y = BitConvert64(17);
+		map_TestChamber.vec_EnemySpawn[1].y = BitConvert64(15);
 
 		map_TestChamber.et_EnemyData[2] = ET_GRUNT;
 		map_TestChamber.vec_EnemySpawn[2].x = BitConvert64(8.5);
-		map_TestChamber.vec_EnemySpawn[2].y = BitConvert64(17);
+		map_TestChamber.vec_EnemySpawn[2].y = BitConvert64(15);
 
 		map_TestChamber.et_EnemyData[3] = ET_GRUNT;
 		map_TestChamber.vec_EnemySpawn[3].x = BitConvert64(10.5);
-		map_TestChamber.vec_EnemySpawn[3].y = BitConvert64(17);
+		map_TestChamber.vec_EnemySpawn[3].y = BitConvert64(15);
 
 		map_TestChamber.et_EnemyData[4] = ET_GRUNT;
 		map_TestChamber.vec_EnemySpawn[4].x = BitConvert64(12.5);
-		map_TestChamber.vec_EnemySpawn[4].y = BitConvert64(17);
+		map_TestChamber.vec_EnemySpawn[4].y = BitConvert64(15);
 		
 
 		// Floor Collisions -- RED

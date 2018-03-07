@@ -124,6 +124,9 @@ void Engine::AttachMapEnemies()
 	{
 		switch (map_Selected.et_EnemyData[count])
 		{
+		case ET_ELITE:
+			ene_Spawned[count] = ene_Elite;
+			break;
 		case ET_GRUNT:
 			ene_Spawned[count] = ene_Grunt;
 			break;

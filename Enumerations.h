@@ -6,6 +6,7 @@
 
 enum EnemyType
 {
+	ET_ELITE,
 	ET_GRUNT
 };
 
