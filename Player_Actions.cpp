@@ -8,96 +8,107 @@
 // Right Movement Functions
 void Player::MoveRight()
 {
-	bol_Facing = RIGHT;
-	bol_MovingR = true;
+	sta_Current.Facing = RIGHT;
+	sta_Current.MovingR = true;
 }
 void Player::StopRight()
 {
-	bol_MovingR = false;
+	sta_Current.MovingR = false;
 }
 
 // Left Movement Functions
 void Player::MoveLeft()
 {
-	bol_Facing = LEFT;
-	bol_MovingL = true;
+	sta_Current.Facing = LEFT;
+	sta_Current.MovingL = true;
 }
 void Player::StopLeft()
 {
-	bol_MovingL = false;
+	sta_Current.MovingL = false;
 }
 
 // Jump Functions
 void Player::EngageJump()
 {
-	bol_Jumping = true;
-	bol_Falling = true;
-	bol_CanJump = false;
+	sta_Current.Jumping = true;
+	sta_Current.Falling = true;
+	sta_Current.CanJump = false;
 }
-void Player::ProcessJump()
+void Player::ProcessJump(float ElapsedTime)
 {
-	vec_Velocity.y -= flo_Jump_Speed;
+	// Jump Action Stats
+	float jumpSpeed = 40;
+	float jumpDuration = .5;
+	static float jumpElapsed = 0;
 
-	flo_JumpCounter++;
-	if (flo_JumpCounter >= flo_JumpDuration)
+	vec_Velocity.y -= jumpSpeed * ElapsedTime;
+
+	jumpElapsed += ElapsedTime;
+	if (jumpElapsed >= jumpDuration)
 	{
-		flo_JumpCounter = 0;
+		jumpElapsed = 0;
 		DisengageJump();
 	}
 }
 void Player::DisengageJump()
 {
-	bol_Jumping = false;
+	sta_Current.Jumping = false;
 }
 
 // Duck Functions
 void Player::EngageDuck()
 {
-	bol_Ducking = true;
+	sta_Current.Ducking = true;
 }
 void Player::DisengageDuck()
 {
-	bol_Ducking = false;
+	sta_Current.Ducking = false;
 }
 
 // Roll Functions
 void Player::EngageLeftRoll()
 {
-	bol_Rolling = true;
-	bol_Facing = LEFT;
+	sta_Current.Rolling = true;
+	sta_Current.Facing = LEFT;
 }
 void Player::EngageRightRoll()
 {
-	bol_Rolling = true;
-	bol_Facing = RIGHT;
+	sta_Current.Rolling = true;
+	sta_Current.Facing = RIGHT;
 }
-void Player::ProcessRoll()
+void Player::ProcessRoll(float ElapsedTime)
 {
-	if (int_RollCounter == 0)
-	{
-		bol_RollFaceHolder = bol_Facing;
-	}
+	static bool bol_RollFaceHolder;
+	float rollDelay = 5;
+	float rollDuration = 1;
+	static float rollElapsed = 0;
+	float rollMovement = 512;
 
-	float rollFrame = flo_RollMovement / int_RollDuration;
+
+	if (rollElapsed == 0)
+	{
+		bol_RollFaceHolder = sta_Current.Facing;
+	}
 
 	switch (bol_RollFaceHolder)
 	{
 	case RIGHT:
-		vec_Velocity.x += rollFrame;
+		vec_Velocity.x += rollMovement * ElapsedTime;
 		break;
 	case LEFT:
-		vec_Velocity.x -= rollFrame;
+		vec_Velocity.x -= rollMovement * ElapsedTime;
 		break;
 	}
+	
+	rollElapsed += ElapsedTime;
 
-	int_RollCounter++;
-	if (int_RollCounter >= int_RollDuration)
+	if (rollElapsed >= rollDuration)
 	{
-		int_RollCounter = 0;
+		rollElapsed = 0;
 		DisengageRoll();
 	}
 }
 void Player::DisengageRoll()
 {
-	bol_Rolling = false;
+	sta_Current.Rolling = false;
 }

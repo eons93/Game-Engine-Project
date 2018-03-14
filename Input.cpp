@@ -39,7 +39,7 @@ void Engine::Input()
 		}
 
 		// Handle Player Duck and Roll
-		if (Keyboard::isKeyPressed(Keyboard::S) && player.bol_Jumping == false)
+		if (Keyboard::isKeyPressed(Keyboard::S) && player.GetState().Jumping == false)
 		{
 			player.EngageDuck();
 		}
@@ -47,18 +47,18 @@ void Engine::Input()
 		{
 			player.DisengageDuck();
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Left) && (player.bol_Ducking == true && player.bol_Rolling == false))
+		if (Keyboard::isKeyPressed(Keyboard::Left) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
 		{
 			player.EngageLeftRoll();
 		}
-		else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.bol_Ducking == true && player.bol_Rolling == false))
+		else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
 		{
 			player.EngageRightRoll();
 		}
 
 
 		// Handle Player Jumping
-		if (Keyboard::isKeyPressed(Keyboard::W) && player.bol_CanJump == true)
+		if (Keyboard::isKeyPressed(Keyboard::W) && player.GetState().CanJump == true)
 		{
 			player.EngageJump();
 		}

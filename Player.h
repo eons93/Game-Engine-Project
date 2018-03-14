@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Map.h"
 #include "Animation.h"
+#include "Structs.h"
 
 
 using namespace sf;
@@ -12,60 +13,29 @@ class Player
 private:
 
 	// Player's Stats
-	float flo_Move_Speed;
-	float flo_Jump_Speed;
+	Attributes Att_Stats;
+	float flo_CurrentHealth;
 
-	// Jump Action Stats
-	float flo_JumpHeight;
-	int flo_JumpDuration;
-	int flo_JumpCounter;
-	
-	// Roll Action Stats
-	bool bol_RollFaceHolder;
-	int int_RollDelay;
-	int int_RollDuration;
-	int int_RollCounter;
-	float flo_RollMovement;
-	
-	// Manages what to draw
+	// Drawing Manager
 	sf::IntRect rec_Selection;
 	sf::Sprite spr_CurrentSprite;
 	sf::Texture txu_Texture;
 	Animation ani_CurrentAnimatation;
 
-	void ReverseSprite();
-
-	//computes what the player class needs to do
-	void Manager();
-	
-public:
-	Player();
-
-	// Manages what to draw. 
+	// Animation Manager 
 	void LoadAnimations();
 	void StateDetector();
-	Sprite GetSprite();
-	sf::Vector2f GetPosition();
 	Animation CurrentAnimationFunc();
+	void ReverseSprite();
 
-	// Variables to Detect Player State
-	bool bol_Facing;
-	bool bol_Jumping;
-	bool bol_Ducking;
-	bool bol_Rolling;
-	bool bol_Blocking;
-	bool bol_Falling;
-	bool bol_Shooting;
-	bool bol_Meleeing;
-	bool bol_MovingL;
-	bool bol_MovingR;
-	ComplexState cs_CurrentState;
-
-	// Manages States
+	// State Memory
 	void CopyState(ComplexState holder);
 	bool CompareState();
 	ComplexState cs_StateHolder;
 	bool bol_FacingHolder;
+	
+	// Action Manager
+	void Manager(float ElapsedTime);
 
 	// Player Animations
 	Animation ani_Idle;
@@ -79,13 +49,27 @@ public:
 	Animation ani_Roll;
 	Animation ani_Duck;
 	Animation ani_Block;
+	
+public:
+	Player();
 
-	bool bol_CanJump;
+	// Getters
+	Sprite GetSprite();
+	sf::Vector2f GetPosition();
+	sf::Vector2f GetVelocity();
+	States GetState();
+	Attributes GetAttributes();
+	float GetCurrentHealth();
 
-	// Misc Stats
+	// State Management
+	States sta_Current;
+
+	// Position Management
 	sf::Vector2f vec_Position;
 	sf::Vector2f vec_Velocity;
 	void Spawn(Map map);
+
+	// Misc Stats
 	float flo_MaxX;
 	float flo_MaxY;
 	float flo_MinX;
@@ -96,27 +80,31 @@ public:
 	float flo_MaxVelY;
 	void CheckMinMax(sf::Vector2f position, sf::Vector2f velocity);
 	void ResetMinMax(sf::Vector2f position, sf::Vector2f velocity);
+	 
+	// Player Actions
 
-
-	//Player Actions
+	// Movement
 	void MoveRight();
 	void MoveLeft();
 	void StopRight();
 	void StopLeft();
 
+	// Jumping
 	void EngageJump();
-	void ProcessJump();
+	void ProcessJump(float ElapsedTime);
 	void DisengageJump();
 
+	// Ducking
 	void EngageDuck();
 	void DisengageDuck();
 
+	// Rolling
 	void EngageLeftRoll();
 	void EngageRightRoll();
-	void ProcessRoll();
+	void ProcessRoll(float ElapsedTime);
 	void DisengageRoll();
 
-	//Updater
-	void UpdatePhase1();
-	void UpdatePhase2();
+	// Updater
+	void UpdatePhase1(float ElapsedTime);
+	void UpdatePhase2(float ElapsedTime);
 };

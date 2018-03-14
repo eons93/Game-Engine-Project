@@ -6,22 +6,22 @@
 Animation::Animation()
 {
 	rec_Frame.resize(16);
-	int_FrameMarker.resize(16);
+	flo_FrameMarker.resize(16);
 }
 
-void Animation::InitializeAnimation(int num_frames, int duration)
+void Animation::InitializeAnimation(int num_frames, float durationSeconds)
 {
-	int_DurationCounter = 0;
-	int_Duration = duration;
+	flo_DurationCurrent = 0;
+	flo_DurationSeconds = durationSeconds;
 	int_FrameCounter = 0;
 	int_NumFrames = num_frames;
-	int frameLength = duration / num_frames;
+	float frameLength = durationSeconds / num_frames;
 	
 
-	int_FrameMarker[0] = frameLength * 1;
-	int_FrameMarker[1] = frameLength * 2;
-	int_FrameMarker[2] = frameLength * 3;
-	int_FrameMarker[3] = frameLength * 4;
+	flo_FrameMarker[0] = frameLength * 1;
+	flo_FrameMarker[1] = frameLength * 2;
+	flo_FrameMarker[2] = frameLength * 3;
+	flo_FrameMarker[3] = frameLength * 4;
 
 	for (int count = 0; count < int_NumFrames; count++)
 	{
@@ -36,101 +36,79 @@ void Animation::InitializeAnimation(int num_frames, int duration)
 }
 
 // Based on animation manipulation stats, returns frame desired.
-sf::IntRect Animation::Animate()
+sf::IntRect Animation::Animate(float ElapsedTime)
 {
 
 	if (int_NumFrames == 1)
 	{
-		while (int_DurationCounter < int_FrameMarker[0])
+		while (flo_DurationCurrent < flo_FrameMarker[0])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[0];
 		}
 	}
 
 	if (int_NumFrames == 2)
 	{
-		while (int_DurationCounter < int_FrameMarker[0])
+		while (flo_DurationCurrent < flo_FrameMarker[0])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[0];
 		}
-		while (int_DurationCounter < int_FrameMarker[1])
+		while (flo_DurationCurrent < flo_FrameMarker[1])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[1];
 		}
 	}
 	
 	if (int_NumFrames == 3)
 	{
-		while (int_DurationCounter < int_FrameMarker[0])
+		while (flo_DurationCurrent < flo_FrameMarker[0])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[0];
 		}
-		while (int_DurationCounter < int_FrameMarker[1])
+		while (flo_DurationCurrent < flo_FrameMarker[1])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[1];
 		}
-		while (int_DurationCounter < int_FrameMarker[2])
+		while (flo_DurationCurrent < flo_FrameMarker[2])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[2];
 		}
 	}
 
 	if (int_NumFrames == 4)
 	{
-		while (int_DurationCounter < int_FrameMarker[0])
+		while (flo_DurationCurrent < flo_FrameMarker[0])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[0];
 		}
-		while (int_DurationCounter < int_FrameMarker[1])
+		while (flo_DurationCurrent < flo_FrameMarker[1])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[1];
 		}
-		while (int_DurationCounter < int_FrameMarker[2])
+		while (flo_DurationCurrent < flo_FrameMarker[2])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[2];
 		}
-		while (int_DurationCounter < int_FrameMarker[3])
+		while (flo_DurationCurrent < flo_FrameMarker[3])
 		{
-			int_DurationCounter++;
+			flo_DurationCurrent += ElapsedTime;
 			return rec_Frame[3];
 		}
 	}
-	
-	/*
-	while (int_DurationCounter < int_FrameMarker[0])
-	{
-		int_DurationCounter++;
-		return rec_Frame[0];
-	}
-	while (int_DurationCounter < int_FrameMarker[1])
-	{
-		int_DurationCounter++;
-		return rec_Frame[1];
-	}
-	while (int_DurationCounter < int_FrameMarker[2])
-	{
-		int_DurationCounter++;
-		return rec_Frame[2];
-	}
-	while (int_DurationCounter < int_FrameMarker[3])
-	{
-		int_DurationCounter++;
-		return rec_Frame[3];
-	}*/
 
 	// When animation is over, reset.
-	if (int_DurationCounter == int_Duration)
+	if (flo_DurationCurrent >= flo_DurationSeconds)
 	{
-		int_DurationCounter = 0;
+		flo_DurationCurrent = 0;
 		return rec_Frame[0];
 	}
 }

@@ -51,11 +51,12 @@ private:
 
 	// Private functions for internal use only
 	void Input();
-	void Update();
+	void Update(float ElapsedTime);
 	void Draw();
 
 	// Update Functions
 	void UpdateCamera();
+	void ProcessAI(float ElapsedTime, EnemyObject &enemy);
 	void DetectCollisionPlayer(Player &Lplayer);
 	void DetectCollisionEnemy(EnemyObject &enemy);
 
@@ -74,6 +75,12 @@ private:
 	EnemyObject ene_Elite;
 	EnemyObject ene_Grunt;
 
+	//AI Components
+	void Patrol(float ElapsedTime, EnemyObject &enemy, sf::Vector2f point1, sf::Vector2f point2);
+
+	//Enemy AI's
+	void GruntAI(float ElapsedTime, EnemyObject &enemy);
+	void EliteAI(float ElapsedTime, EnemyObject &enemy);
 
 public:
 	// The Engine constructor

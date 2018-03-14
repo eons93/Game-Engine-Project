@@ -142,24 +142,24 @@ void HUD::AttachCamera(sf::View camera)
 // Update values from player for display
 void HUD::UpdateHUD(Player HUDplayer)
 {	
-	txt_TopRight[1].setString("Position: " + StringConvert(HUDplayer.vec_Position.x / 64) + ", " + StringConvert(HUDplayer.vec_Position.y / 64));
+	txt_TopRight[1].setString("Position: " + StringConvert(HUDplayer.GetPosition().x / 64) + ", " + StringConvert(HUDplayer.GetPosition().y / 64));
 	txt_TopRight[2].setString("X Range: " + StringConvert(HUDplayer.flo_MinX) + ", " + StringConvert(HUDplayer.flo_MaxX));
 	txt_TopRight[3].setString("Y Range: " + StringConvert(HUDplayer.flo_MinY) + ", " + StringConvert(HUDplayer.flo_MaxY));
 
-	txt_TopRight[4].setString("Velocity: " + StringConvert(HUDplayer.vec_Velocity.x) + "   , " + StringConvert(HUDplayer.vec_Velocity.y) + "    ");
+	txt_TopRight[4].setString("Velocity: " + StringConvert(HUDplayer.GetVelocity().x) + "   , " + StringConvert(HUDplayer.GetVelocity().y) + "    ");
 	txt_TopRight[5].setString("X Range: " + StringConvert(HUDplayer.flo_MinVelX) + ", " + StringConvert(HUDplayer.flo_MaxVelX));
 	txt_TopRight[6].setString("Y Range: " + StringConvert(HUDplayer.flo_MinVelY) + ", " + StringConvert(HUDplayer.flo_MaxVelY));
 
-	txt_TopRight[7].setString("Facing:       " + StringConvert(HUDplayer.bol_Facing));
-	txt_TopRight[8].setString("Jumping:      " + StringConvert(HUDplayer.bol_Jumping));
-	txt_TopRight[9].setString("Ducking:      " + StringConvert(HUDplayer.bol_Ducking));
-	txt_TopRight[10].setString("Rolling:      " + StringConvert(HUDplayer.bol_Rolling));
-	txt_TopRight[11].setString("Blocking:     " + StringConvert(HUDplayer.bol_Blocking));
-	txt_TopRight[12].setString("Falling:      " + StringConvert(HUDplayer.bol_Falling));
-	txt_TopRight[13].setString("Shooting:     " + StringConvert(HUDplayer.bol_Shooting));
-	txt_TopRight[14].setString("Meleeing:     " + StringConvert(HUDplayer.bol_Meleeing));
-	txt_TopRight[15].setString("Moving Left:  " + StringConvert(HUDplayer.bol_MovingL));
-	txt_TopRight[16].setString("Moving Right: " + StringConvert(HUDplayer.bol_MovingR));
+	txt_TopRight[7].setString("Facing:       " + StringConvert(HUDplayer.GetState().Facing));
+	txt_TopRight[8].setString("Jumping:      " + StringConvert(HUDplayer.GetState().Jumping));
+	txt_TopRight[9].setString("Ducking:      " + StringConvert(HUDplayer.GetState().Ducking));
+	txt_TopRight[10].setString("Rolling:      " + StringConvert(HUDplayer.GetState().Rolling));
+	txt_TopRight[11].setString("Blocking:     " + StringConvert(HUDplayer.GetState().Blocking));
+	txt_TopRight[12].setString("Falling:      " + StringConvert(HUDplayer.GetState().Falling));
+	txt_TopRight[13].setString("Shooting:     " + StringConvert(HUDplayer.GetState().Shooting));
+	txt_TopRight[14].setString("Meleeing:     " + StringConvert(HUDplayer.GetState().Meleeing));
+	txt_TopRight[15].setString("Moving Left:  " + StringConvert(HUDplayer.GetState().MovingL));
+	txt_TopRight[16].setString("Moving Right: " + StringConvert(HUDplayer.GetState().MovingR));
 
 	// Lines each item up properly within screen
 	for (int count = 0; count < 20; count++)

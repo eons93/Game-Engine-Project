@@ -3,21 +3,23 @@
 #include "Player.h"
 #include <iostream>
 #include "Enemy.h"
+#include "GeneralFunctions.h"
 
 using namespace sf;
 
-void Engine::Update()
+void Engine::Update(float ElapsedTime)
 {
 	// Player Updaters
-	player.UpdatePhase1();
+	player.UpdatePhase1(ElapsedTime);
 	DetectCollisionPlayer(player);
-	player.UpdatePhase2();
+	player.UpdatePhase2(ElapsedTime);
 
 	// Enemy Updaters
-	for (int count = 0; count < MAXENEMIES; count++)
+	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
+		ProcessAI(ElapsedTime, ene_Spawned[count]);
 		DetectCollisionEnemy(ene_Spawned[count]);
-		ene_Spawned[count].Update();
+		ene_Spawned[count].Update(ElapsedTime);
 	}
 	
 	// Camera Updaters
@@ -37,12 +39,12 @@ void Engine::DetectCollisionPlayer(Player &player)
 		{
 		case PT_FLOOR: //Set player position to top of surface, zero y-velocity, stop falling and allow jumping.
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& player.bol_Jumping == false)
+				&& player.GetState().Jumping == false)
 			{
 				player.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y - 32;
 				player.vec_Velocity.y = 0;
-				player.bol_Falling = false;
-				player.bol_CanJump = true;
+				player.sta_Current.Falling = false;
+				player.sta_Current.CanJump = true;
 			}
 			break;
 		case PT_CEILING: //Set player position to bottom of surface
@@ -54,14 +56,14 @@ void Engine::DetectCollisionPlayer(Player &player)
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& (player.vec_Velocity.y < 2 || player.vec_Velocity.y > -2))
+				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
 				player.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x + 34;
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& (player.vec_Velocity.y < 2 || player.vec_Velocity.y > -2))
+				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
 				player.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x - 34;
 			}
@@ -77,12 +79,12 @@ void Engine::DetectCollisionPlayer(Player &player)
 		//		--Set velocity to 0
 		//		--Allow player to jump and not be in falling state
 		if (map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& player.bol_Jumping == false)
+			&& player.GetState().Jumping == false)
 		{
 			player.vec_Position.y = map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getPosition().y - 32;
 			player.vec_Velocity.y = 0;
-			player.bol_Falling = false;
-			player.bol_CanJump = true;
+			player.sta_Current.Falling = false;
+			player.sta_Current.CanJump = true;
 		}
 		// If player is colliding with ceiling surface
 		//		--Set Position to proper
@@ -95,14 +97,14 @@ void Engine::DetectCollisionPlayer(Player &player)
 		// If player is colliding with left surface
 		//		--Set Position to proper
 		if (map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& (player.vec_Velocity.y < 2 || player.vec_Velocity.y > -2))
+			&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 		{
 			player.vec_Position.x = map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getPosition().x + 34;
 		}
 		// If player is colliding with right surface
 		//		--Set Position to proper
 		if (map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& (player.vec_Velocity.y < 2 || player.vec_Velocity.y > -2))
+			&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 		{
 			player.vec_Position.x = map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getPosition().x - 34;
 		}
@@ -126,15 +128,15 @@ void Engine::DetectCollisionPlayer(Player &player)
 			|| map_Selected.slo_SlopeData[count].col_BottomCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
 			|| map_Selected.slo_SlopeData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
 			|| map_Selected.slo_SlopeData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds()))
-			&& player.bol_Jumping == false)
+			&& player.GetState().Jumping == false)
 		{
 			// Right Slope
 			if (map_Selected.slo_SlopeData[count].bol_Inverted == false &&
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == RIGHT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = player.vec_Position.x + 34;
-				playerPoint.y = player.vec_Position.y + 34;
+				playerPoint.x = player.GetPosition().x + 34;
+				playerPoint.y = player.GetPosition().y + 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -145,12 +147,12 @@ void Engine::DetectCollisionPlayer(Player &player)
 				//		--Set Velocity to 0
 				//		--Allow player to jump and not be in falling state.
 				if ((difference > 0 && difference < (64 * angle) + 4)
-					&& player.vec_Position.y > startPoint.y - difference - 34)
+					&& player.GetPosition().y > startPoint.y - difference - 34)
 				{
 					player.vec_Position.y = startPoint.y - (difference / angle) - 34;
 					player.vec_Velocity.y = 0;
-					player.bol_Falling = false;
-					player.bol_CanJump = true;
+					player.sta_Current.Falling = false;
+					player.sta_Current.CanJump = true;
 				}
 			}
 			//Left Slope
@@ -158,8 +160,8 @@ void Engine::DetectCollisionPlayer(Player &player)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == LEFT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = player.vec_Position.x - 34;
-				playerPoint.y = player.vec_Position.y + 34;
+				playerPoint.x = player.GetPosition().x - 34;
+				playerPoint.y = player.GetPosition().y + 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -170,12 +172,12 @@ void Engine::DetectCollisionPlayer(Player &player)
 				//		--Set Velocity to 0
 				//		--Allow player to jump and not be in falling state.
 				if ((difference > 0 && difference < (64 * angle) + 4)
-					&& player.vec_Position.y > startPoint.y + difference - 96)
+					&& player.GetPosition().y > startPoint.y + difference - 96)
 				{
 					player.vec_Position.y = startPoint.y + (difference / angle) - 96;
 					player.vec_Velocity.y = 0;
-					player.bol_Falling = false;
-					player.bol_CanJump = true;
+					player.sta_Current.Falling = false;
+					player.sta_Current.CanJump = true;
 				}
 			}
 			//Right Inverted Slope
@@ -183,8 +185,8 @@ void Engine::DetectCollisionPlayer(Player &player)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == RIGHT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = player.vec_Position.x + 34;
-				playerPoint.y = player.vec_Position.y - 34;
+				playerPoint.x = player.GetPosition().x + 34;
+				playerPoint.y = player.GetPosition().y - 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -194,7 +196,7 @@ void Engine::DetectCollisionPlayer(Player &player)
 				//		--Set position to proper 
 				//		--Set Velocity to 0
 				if ((difference > 0 && difference < 68)
-					&& player.vec_Position.y < startPoint.y - difference + 96)
+					&& player.GetPosition().y < startPoint.y - difference + 96)
 				{
 					player.vec_Position.y = startPoint.y - difference + 96;
 					player.vec_Velocity.y = 0;
@@ -205,8 +207,8 @@ void Engine::DetectCollisionPlayer(Player &player)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == LEFT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = player.vec_Position.x - 34;
-				playerPoint.y = player.vec_Position.y - 34;
+				playerPoint.x = player.GetPosition().x - 34;
+				playerPoint.y = player.GetPosition().y - 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -216,13 +218,26 @@ void Engine::DetectCollisionPlayer(Player &player)
 				//		--Set position to proper 
 				//		--Set Velocity to 0
 				if ((difference > 0 && difference < 68)
-					&& player.vec_Position.y < startPoint.y + difference + 34)
+					&& player.GetPosition().y < startPoint.y + difference + 34)
 				{
 					player.vec_Position.y = startPoint.y + difference + 34;
 					player.vec_Velocity.y = 0;
 				}
 			}
 		}
+	}
+}
+
+void Engine::ProcessAI(float ElapsedTime, EnemyObject &enemy)
+{
+	switch (enemy.GetID())
+	{
+	case 1:
+		GruntAI(ElapsedTime, enemy);
+		break;
+	case 2: 
+		EliteAI(ElapsedTime, enemy);
+		break;
 	}
 }
 
@@ -241,7 +256,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 			{
 				enemy.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y - 32;
 				enemy.vec_Velocity.y = 0;
-				enemy.bol_Falling = false;
+				enemy.sta_Current.Falling = false;
 				//enemy.canJump = true;
 			}
 			break;
@@ -254,14 +269,14 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-				&& (enemy.vec_Velocity.y < 2 || enemy.vec_Velocity.y > -2))
+				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
 				enemy.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x + 34;
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-				&& (enemy.vec_Velocity.y < 2 || enemy.vec_Velocity.y > -2))
+				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
 				enemy.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x - 34;
 			}
@@ -281,7 +296,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 		{
 			enemy.vec_Position.y = map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getPosition().y - 32;
 			enemy.vec_Velocity.y = 0;
-			enemy.bol_Falling = false;
+			enemy.sta_Current.Falling = false;
 			//enemy.canJump = true;
 		}
 		// If player is colliding with ceiling surface
@@ -295,14 +310,14 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 		// If player is colliding with left surface
 		//		--Set Position to proper
 		if (map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-			&& (enemy.vec_Velocity.y < 2 || enemy.vec_Velocity.y > -2))
+			&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 		{
 			enemy.vec_Position.x = map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getPosition().x + 34;
 		}
 		// If player is colliding with right surface
 		//		--Set Position to proper
 		if (map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-			&& (enemy.vec_Velocity.y < 2 || enemy.vec_Velocity.y > -2))
+			&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 		{
 			enemy.vec_Position.x = map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getPosition().x - 34;
 		}
@@ -333,8 +348,8 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == RIGHT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = enemy.vec_Position.x + 34;
-				playerPoint.y = enemy.vec_Position.y + 34;
+				playerPoint.x = enemy.GetPosition().x + 34;
+				playerPoint.y = enemy.GetPosition().y + 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -345,11 +360,11 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				//		--Set Velocity to 0
 				//		--Allow player to jump and not be in falling state.
 				if ((difference > 0 && difference < (64 * angle) + 4)
-					&& enemy.vec_Position.y > startPoint.y - difference - 34)
+					&& enemy.GetPosition().y > startPoint.y - difference - 34)
 				{
 					enemy.vec_Position.y = startPoint.y - (difference / angle) - 34;
 					enemy.vec_Velocity.y = 0;
-					enemy.bol_Falling = false;
+					enemy.sta_Current.Falling = false;
 					//enemy.canJump = true;
 				}
 			}
@@ -358,8 +373,8 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == LEFT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = enemy.vec_Position.x - 34;
-				playerPoint.y = enemy.vec_Position.y + 34;
+				playerPoint.x = enemy.GetPosition().x - 34;
+				playerPoint.y = enemy.GetPosition().y + 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -370,11 +385,11 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				//		--Set Velocity to 0
 				//		--Allow player to jump and not be in falling state.
 				if ((difference > 0 && difference < (64 * angle) + 4)
-					&& enemy.vec_Position.y > startPoint.y + difference - 96)
+					&& enemy.GetPosition().y > startPoint.y + difference - 96)
 				{
 					enemy.vec_Position.y = startPoint.y + (difference / angle) - 96;
 					enemy.vec_Velocity.y = 0;
-					enemy.bol_Falling = false;
+					enemy.sta_Current.Falling = false;
 					//enemy.canJump = true;
 				}
 			}
@@ -383,8 +398,8 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == RIGHT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = enemy.vec_Position.x + 34;
-				playerPoint.y = enemy.vec_Position.y - 34;
+				playerPoint.x = enemy.GetPosition().x + 34;
+				playerPoint.y = enemy.GetPosition().y - 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;
@@ -394,7 +409,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				//		--Set position to proper 
 				//		--Set Velocity to 0
 				if ((difference > 0 && difference < 68)
-					&& enemy.vec_Position.y < startPoint.y - difference + 96)
+					&& enemy.GetPosition().y < startPoint.y - difference + 96)
 				{
 					enemy.vec_Position.y = startPoint.y - difference + 96;
 					enemy.vec_Velocity.y = 0;
@@ -405,8 +420,8 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				map_Selected.slo_SlopeData[count].bol_LeftorRight == LEFT)
 			{
 				// Assign focal point for player detection of slope
-				playerPoint.x = enemy.vec_Position.x - 34;
-				playerPoint.y = enemy.vec_Position.y - 34;
+				playerPoint.x = enemy.GetPosition().x - 34;
+				playerPoint.y = enemy.GetPosition().y - 34;
 
 				// Calculate how far player is in the slope's tile
 				difference = playerPoint.x - startPoint.x;

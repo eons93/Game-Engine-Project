@@ -42,15 +42,12 @@ Engine::Engine()
 	AttachMapEnemies();
 	rs_Background.setSize(sf::Vector2f(Resolution.x, Resolution.y));
 	rs_Background.setOrigin(sf::Vector2f(Resolution.x / 2, Resolution.y / 2));
-	rs_Background.setPosition(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
+	rs_Background.setPosition(sf::Vector2f(player.GetPosition().x, player.GetPosition().y));
 
-	
 	
 	// Load Player
 	player.Spawn(map_Selected);
-	player.LoadAnimations();
-	
-	vew_PlayerCamera.setCenter(player.vec_Position);
+	vew_PlayerCamera.setCenter(player.GetPosition());
 	vew_PlayerCamera.setSize(Resolution.x * 0.625, Resolution.y * 0.625);
 	hud.AttachCamera(vew_PlayerCamera);
 }
@@ -58,18 +55,18 @@ Engine::Engine()
 void Engine::start()
 {
 	// Timing
-	//Clock clock;
+	sf::Clock clock;
 	
 	while (m_Window.isOpen())
 	{
 		// Restart the clock and save the elapsed time into dt
-		//Time dt = clock.restart();
+		Time dt = clock.restart();
 
 		// Make a fraction from the delta time
-		//float dtAsSeconds = dt.asSeconds();
+		float dtAsSeconds = dt.asSeconds();
 		
 		Input();
-		Update();
+		Update(dtAsSeconds);
 		Draw();
 		LimiterFPS();
 	}
@@ -112,15 +109,15 @@ retry:
 
 void Engine::UpdateCamera()
 {
-	rs_Background.setPosition(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
+	rs_Background.setPosition(sf::Vector2f(player.GetPosition().x, player.GetPosition().y));
 
 	m_Window.setView(vew_PlayerCamera);
-	vew_PlayerCamera.setCenter(sf::Vector2f(player.vec_Position.x, player.vec_Position.y));
+	vew_PlayerCamera.setCenter(sf::Vector2f(player.GetPosition().x, player.GetPosition().y));
 }
 
 void Engine::AttachMapEnemies()
 {
-	for (int count = 0; count < MAXENEMIES; count++)
+	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
 		switch (map_Selected.et_EnemyData[count])
 		{
@@ -131,7 +128,7 @@ void Engine::AttachMapEnemies()
 			ene_Spawned[count] = ene_Grunt;
 			break;
 		}
-		
+		ene_Spawned[count].flo_CurrentHealth = ene_Spawned[count].att_Stats.Health;
 		ene_Spawned[count].Spawn(count, map_Selected);
 	}
 }

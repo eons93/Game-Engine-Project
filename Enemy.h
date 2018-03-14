@@ -3,7 +3,7 @@
 #include "Map.h"
 #include "Animation.h"
 #include <string>
-
+#include "Structs.h"
 
 class Map;
 
@@ -16,44 +16,68 @@ private:
 public:
 	EnemyObject();
 
+	//Drawn Objects
+	sf::Text txt_Name;
+	sf::RectangleShape rec_Background;
+	sf::RectangleShape rec_CurrentHealth;
+
+	// Enemy Identification
 	std::string str_Name;
 	sf::Font fon_Enemy;
-	sf::Text txt_Name;
+	int int_ID;
 
-	sf::Vector2f vec_Position;
-	sf::Vector2f vec_Velocity;
+	// Enemy Stats
+	Attributes att_Stats;
+	float flo_CurrentHealth;
 
-	sf::Sprite GetSprite();
-	void Spawn(int ID, Map map);
-
-	// Regulate what to Draw
-	Animation CurrentAnimationFunc();
-	void ReverseSprite();
+	// Drawing Managers
 	sf::Sprite spr_CurrentSprite;
 	Animation ani_Current_State_Animation;
-	Animation ani_Idle;
-	Animation ani_Run;
-	Animation ani_Fall;
-	
-	// Regulate State
+
+	//Animation Managers
 	void StateDetector();
+	void ReverseSprite();
+	Animation CurrentAnimationFunc();
+
+	//State Memory
 	void CopyState(ComplexState holder);
 	bool CompareState();
 	ComplexState cs_StateHolder;
 	bool bol_FacingHolder;
 
-	// Factors of State
-	bool bol_Facing;
-	bool bol_Jumping;
-	bool bol_Ducking;
-	bool bol_Rolling;
-	bool bol_Blocking;
-	bool bol_Falling;
-	bool bol_Shooting;
-	bool bol_Meleeing;
-	bool bol_MovingL;
-	bool bol_MovingR;
-	ComplexState cs_CurrentState;
+	// Animations
+	Animation ani_Idle;
+	Animation ani_Run;
+	Animation ani_Fall;
 
-	void Update();
+	// Getters
+	int GetID();
+	sf::Sprite GetSprite();
+	sf::Vector2f GetPosition();
+	sf::Vector2f GetVelocity();
+	States GetState();
+	Attributes GetAttributes();
+	float GetCurrentHealth();
+
+	// State Management
+	States sta_Current;
+
+	// Position Management
+	sf::Vector2f vec_Position;
+	sf::Vector2f vec_Velocity;
+	void Spawn(int ID, Map map);
+
+	// AI States
+	bool CheckLOS();
+	bool CheckLowHealth();
+	bool CheckRange();
+	float CurrentHealthPercentage();
+	float CalculateHealthLength();
+	AIState ais_CurrentState;
+
+	//Enemy Actions
+	void MoveLeft(float ElapsedTime);
+	void MoveRight(float ElapsedTime);
+
+	void Update(float ElapsedTime);
 };

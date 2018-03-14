@@ -6,7 +6,7 @@
 using namespace std;
 
 // Converts values into strings for displaying purposes
-std::string StringConvert(int value)
+std::string StringConvert(float value)
 {
 	string String = static_cast<ostringstream*>(&(ostringstream() << value))->str();
 	return String;

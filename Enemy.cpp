@@ -3,9 +3,6 @@
 #include "Enumerations.h"
 #include <iostream>
 
-
-
-
 EnemyObject::EnemyObject()
 {
 	str_Name = "Blank";
@@ -15,9 +12,14 @@ EnemyObject::EnemyObject()
 		std::cout << "Default Font not loaded" << std::endl;
 	}
 	txt_Name.setFont(fon_Enemy);
-	txt_Name.setCharacterSize(16);
+	txt_Name.setCharacterSize(12);
 	txt_Name.setFillColor(sf::Color::White);
-	txt_Name.setOrigin(sf::Vector2f(-txt_Name.getGlobalBounds().width * 2, txt_Name.getGlobalBounds().height));
+
+	rec_Background.setFillColor(sf::Color::Black);
+	rec_Background.setSize(sf::Vector2f(48, 4));
+	rec_CurrentHealth.setFillColor(sf::Color::Red);
+	rec_CurrentHealth.setSize(sf::Vector2f(48, 4));
+
 
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
 
@@ -27,22 +29,21 @@ EnemyObject::EnemyObject()
 	vec_Velocity.y = 0;
 
 	//Set Default states
-	bol_Facing = RIGHT;
-
-	bol_Jumping = false;
-	bol_Ducking = false;
-	bol_Rolling = false;
-	bol_Blocking = false;
-	bol_Falling = false;
-	bol_Shooting = false;
-	bol_Meleeing = false;
-	bol_MovingL = false;
-	bol_MovingR = false;
-	cs_CurrentState = CS_GROUND_FACE;
-
+	sta_Current.TookDamage = false;
+	sta_Current.Facing = RIGHT;
+	sta_Current.Jumping = false;
+	sta_Current.Ducking = false;
+	sta_Current.Rolling = false;
+	sta_Current.Blocking = false;
+	sta_Current.Falling = false;
+	sta_Current.Shooting = false;
+	sta_Current.Meleeing = false;
+	sta_Current.MovingL = false;
+	sta_Current.MovingR = false;
+	sta_Current.CurrentState = CS_GROUND_FACE;
 }
 
-void EnemyObject::Update()
+void EnemyObject::Update(float ElapsedTime)
 {
 	StateDetector();
 	ReverseSprite();
@@ -51,37 +52,80 @@ void EnemyObject::Update()
 		ani_Current_State_Animation = CurrentAnimationFunc();
 	}
 	spr_CurrentSprite.setTexture(ani_Current_State_Animation.txu_Source);
-	spr_CurrentSprite.setTextureRect(ani_Current_State_Animation.Animate());
+	spr_CurrentSprite.setTextureRect(ani_Current_State_Animation.Animate(ElapsedTime));
 
-	float dt = 0.5;
-
-	if (bol_Falling == true)
+	if (sta_Current.Falling == true)
 	{
-		vec_Velocity.y += GRAVITY * dt;
-		vec_Position.x += vec_Velocity.x * dt;
-		vec_Position.y += vec_Velocity.y * dt;
+		vec_Velocity.y += GRAVITY * ElapsedTime;
+		vec_Position.x += vec_Velocity.x;
+		vec_Position.y += vec_Velocity.y;
 
 	}
 	else
 	{
-		vec_Position.x += vec_Velocity.x * dt;
-		vec_Position.y += vec_Velocity.y * dt;
+		vec_Position.x += vec_Velocity.x;
+		vec_Position.y += vec_Velocity.y;
 	}
 	vec_Velocity.x = 0;
 
+	// Damage Updaters
+	
+		//spr_CurrentSprite.setColor(sf::Color(255, 127, 127, alpha));
+	
+
+
+	// Sprite and Name
 	spr_CurrentSprite.setPosition(vec_Position);
 	txt_Name.setString(str_Name);
 	txt_Name.setOrigin(sf::Vector2f(txt_Name.getGlobalBounds().width / 2, txt_Name.getGlobalBounds().height * 2));
-	txt_Name.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 32));
-	CopyState(cs_CurrentState);
+	txt_Name.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 40));
 
-	bol_Falling = true;
+	// Health Bar
+	rec_Background.setOrigin(sf::Vector2f(rec_Background.getGlobalBounds().width / 2, rec_Background.getGlobalBounds().height * 2));
+	rec_Background.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 32));
+	
+	rec_CurrentHealth.setPosition(sf::Vector2f(rec_Background.getGlobalBounds().left, rec_Background.getGlobalBounds().top));
+	rec_CurrentHealth.setSize(sf::Vector2f(CalculateHealthLength(), 4));
+
+	CopyState(sta_Current.CurrentState);
+	sta_Current.TookDamage = false;
+	sta_Current.Falling = true;
 }
 
-// Returns Sprite so that it can be drawn
+// Getters
+int EnemyObject::GetID()
+{
+	return int_ID;
+}
+
 sf::Sprite EnemyObject::GetSprite()
 {
 	return spr_CurrentSprite;
+}
+
+sf::Vector2f EnemyObject::GetPosition()
+{
+	return vec_Position;
+}
+
+sf::Vector2f EnemyObject::GetVelocity()
+{
+	return vec_Velocity;
+}
+
+States EnemyObject::GetState()
+{
+	return sta_Current;
+}
+
+Attributes EnemyObject::GetAttributes()
+{
+	return att_Stats;
+}
+
+float EnemyObject::GetCurrentHealth()
+{
+	return flo_CurrentHealth;
 }
 
 
@@ -89,10 +133,19 @@ void EnemyObject::Spawn(int ID, Map map)
 {
 	vec_Position.x = map.vec_EnemySpawn[ID].x;
 	vec_Position.y = map.vec_EnemySpawn[ID].y;
+}
 
-	
+float EnemyObject::CurrentHealthPercentage()
+{
+	float percentHealth = (flo_CurrentHealth * 100) / att_Stats.Health;
+	return percentHealth;
+}
 
-	//Update();
+float EnemyObject::CalculateHealthLength()
+{
+	float input = CurrentHealthPercentage();
+	float output = (input * 48) / 100;
+	return output;
 }
 
 void EnemyObject::StateDetector()
@@ -106,49 +159,50 @@ void EnemyObject::StateDetector()
 	//Block, 
 	//IDLE
 
-	if (bol_MovingL || bol_MovingR == true)
+	if (sta_Current.MovingL || sta_Current.MovingR == true)
 	{
-		if (bol_Jumping == true)
+		if (sta_Current.Jumping == true)
 		{
-			cs_CurrentState = CS_JUMP;
+			sta_Current.CurrentState = CS_JUMP;
 		}
-		else if (bol_Falling == true)
+		else if (sta_Current.Falling == true)
 		{
-			cs_CurrentState = CS_AIR;
+			sta_Current.CurrentState = CS_AIR;
 		}
 		else
 		{
-			cs_CurrentState = CS_GROUND_MOVING;
+			sta_Current.CurrentState = CS_GROUND_MOVING;
 		}
 	}
-	else if (bol_Ducking == true)
+	else if (sta_Current.Ducking == true)
 	{
-		if (bol_Rolling == true)
+		if (sta_Current.Rolling == true)
 		{
-			cs_CurrentState = CS_ROLL;
+			sta_Current.CurrentState = CS_ROLL;
 		}
 		else
 		{
-			cs_CurrentState = CS_DUCK;
+			sta_Current.CurrentState = CS_DUCK;
 		}
 	}
-	else if (bol_Jumping == true)
+	else if (sta_Current.Jumping == true)
 	{
-		cs_CurrentState = CS_JUMP;
+		sta_Current.CurrentState = CS_JUMP;
 	}
-	else if (bol_Falling == true)
+	else if (sta_Current.Falling == true)
 	{
-		cs_CurrentState = CS_AIR;
+		sta_Current.CurrentState = CS_AIR;
 	}
 	else
 	{
-		cs_CurrentState = CS_GROUND_FACE;
+		sta_Current.CurrentState = CS_GROUND_FACE;
 	}
 }
 
 void EnemyObject::ReverseSprite()
 {
-	switch (bol_Facing)
+	flo_CurrentHealth -= .1;
+	switch (sta_Current.Facing)
 	{
 	case LEFT:
 		spr_CurrentSprite.setScale(-1.f, 1.f);
@@ -161,7 +215,7 @@ void EnemyObject::ReverseSprite()
 
 bool EnemyObject::CompareState()
 {
-	if (cs_StateHolder != cs_CurrentState)
+	if (cs_StateHolder != sta_Current.CurrentState)
 	{
 		return true;
 	}
@@ -173,7 +227,7 @@ bool EnemyObject::CompareState()
 
 Animation EnemyObject::CurrentAnimationFunc()
 {
-	switch (cs_CurrentState)
+	switch (sta_Current.CurrentState)
 	{
 	case CS_AIR:
 		return ani_Fall;
@@ -190,5 +244,20 @@ Animation EnemyObject::CurrentAnimationFunc()
 void EnemyObject::CopyState(ComplexState holder)
 {
 	cs_StateHolder = holder;
-	bol_FacingHolder = bol_Facing;
+	bol_FacingHolder = sta_Current.Facing;
+}
+
+bool EnemyObject::CheckLOS()
+{
+	return false;
+}
+
+bool EnemyObject::CheckLowHealth()
+{
+	return false;
+}
+
+bool EnemyObject::CheckRange()
+{
+	return false;
 }

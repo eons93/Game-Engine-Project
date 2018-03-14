@@ -33,10 +33,12 @@ void Engine::Draw()
 		m_Window.draw(map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea);
 	}
 	
-	for (int count = 0; count < MAXENEMIES; count++)
+	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
 		m_Window.draw(ene_Spawned[count].GetSprite());
 		m_Window.draw(ene_Spawned[count].txt_Name);
+		m_Window.draw(ene_Spawned[count].rec_Background);
+		m_Window.draw(ene_Spawned[count].rec_CurrentHealth);
 	}
 	
 

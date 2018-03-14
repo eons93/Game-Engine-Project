@@ -6,9 +6,12 @@
 
 Player::Player()
 {
+	// Load Assets
+	LoadAnimations();
+
 	// Load image to texture then apply to Player's Sprite
 	spr_CurrentSprite.setTexture(ani_CurrentAnimatation.txu_Source);
-	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate());
+	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate(0));
 
 	//Set Origin
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
@@ -24,44 +27,35 @@ Player::Player()
 	flo_MinY = 0;
 
 	//Set Default states
-	bol_Facing = RIGHT;
-	
-	bol_Jumping = false;
-	bol_Ducking = false;
-	bol_Rolling = false;
-	bol_Blocking = false;
-	bol_Falling = false;
-	bol_Shooting = false;
-	bol_Meleeing = false;
-	bol_MovingL = false;
-	bol_MovingR = false;
-	cs_CurrentState = CS_GROUND_FACE;
 
+	sta_Current.Facing = RIGHT;
+	
+	sta_Current.Jumping = false;
+	sta_Current.Ducking = false;
+	sta_Current.Rolling = false;
+	sta_Current.Blocking = false;
+	sta_Current.Falling = false;
+	sta_Current.Shooting = false;
+	sta_Current.Meleeing = false;
+	sta_Current.MovingL = false;
+	sta_Current.MovingR = false;
+	sta_Current.CurrentState = CS_GROUND_FACE;
+	sta_Current.CanJump = true;
 
 	//Set Stats
-	flo_Move_Speed = 7.0;
-	flo_Jump_Speed = 1.0;
+	Att_Stats.MovementSpeed = 256.0;
 
-	flo_JumpHeight = 128;
-	flo_JumpDuration = 30;
-	flo_JumpCounter = 0;
-	bol_CanJump = true;
-
-	int_RollDelay = 5;
-	int_RollDuration = 30;
-	int_RollCounter = 0;
-	flo_RollMovement = 192;
 }
 
 // Updates player stats
-void Player::UpdatePhase1()
+void Player::UpdatePhase1(float ElapsedTime)
 {
 	// Apply action effects
-	Manager();
+	Manager(ElapsedTime);
 }
 
 // applies updated player stats
-void Player::UpdatePhase2()
+void Player::UpdatePhase2(float ElapsedTime)
 {
 	StateDetector();
 	ReverseSprite();
@@ -69,32 +63,30 @@ void Player::UpdatePhase2()
 	{
 		ani_CurrentAnimatation = CurrentAnimationFunc();
 	}
-	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate());
-	
-	float dt = 0.5;
+	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate(ElapsedTime));
 
-	if (bol_Falling == true)
+	// Apply Gravity and Velocity to Position
+	if (sta_Current.Falling == true)
 	{
-		vec_Velocity.y += GRAVITY * dt;
-		vec_Position.x += vec_Velocity.x * dt;
-		vec_Position.y += vec_Velocity.y * dt;
+		vec_Velocity.y += GRAVITY * ElapsedTime;
+		vec_Position.x += vec_Velocity.x;
+		vec_Position.y += vec_Velocity.y;
 
 	}
 	else
 	{
-		vec_Position.x += vec_Velocity.x * dt;
-		vec_Position.y += vec_Velocity.y * dt;
+		vec_Position.x += vec_Velocity.x;
+		vec_Position.y += vec_Velocity.y;
 	}
 	vec_Velocity.x = 0;
-	
 	CheckMinMax(vec_Position, vec_Velocity);
 
+
 	spr_CurrentSprite.setPosition(vec_Position);
-	CopyState(cs_CurrentState);
+	CopyState(sta_Current.CurrentState);
 
 	
-	bol_Falling = true;
-	
+	sta_Current.Falling = true;
 }
 
 void Player::Spawn(Map map)
@@ -103,15 +95,10 @@ void Player::Spawn(Map map)
 	vec_Position.y = map.vec_PlayerSpawn.y;
 
 	ResetMinMax(vec_Position, vec_Velocity);
-	
 }
 
+//------------Getters and Setters------------------------
 
-
-
-//------------Sprite and Animation------------------------
-
-// Returns Sprite so that it can be drawn
 sf::Sprite Player::GetSprite()
 {
 	return spr_CurrentSprite;
@@ -122,10 +109,33 @@ sf::Vector2f Player::GetPosition()
 	return spr_CurrentSprite.getPosition();
 }
 
+sf::Vector2f Player::GetVelocity()
+{
+	return vec_Velocity;
+}
+
+States Player::GetState()
+{
+	return sta_Current;
+}
+
+Attributes Player::GetAttributes()
+{
+	return Att_Stats;
+}
+
+float Player::GetCurrentHealth()
+{
+	return flo_CurrentHealth;
+}
+
+
+//--------------Update Sub Functions----------------
+
 //Flips Player Sprite if facing left. 
 void Player::ReverseSprite()
 {
-	switch (bol_Facing) 
+	switch (sta_Current.Facing)
 	{
 		case LEFT:
 			spr_CurrentSprite.setScale(-1.f, 1.f);
@@ -148,43 +158,43 @@ void Player::StateDetector()
 		//Block, 
 		//IDLE
 
-	if (bol_MovingL || bol_MovingR == true)
+	if (sta_Current.MovingL || sta_Current.MovingR == true)
 	{
-		if (bol_Jumping == true)
+		if (sta_Current.Jumping == true)
 		{
-			cs_CurrentState = CS_JUMP;
+			sta_Current.CurrentState = CS_JUMP;
 		}
-		else if (bol_Falling == true)
+		else if (sta_Current.Falling == true)
 		{
-			cs_CurrentState = CS_AIR;
+			sta_Current.CurrentState = CS_AIR;
 		}
 		else
 		{
-			cs_CurrentState = CS_GROUND_MOVING;
+			sta_Current.CurrentState = CS_GROUND_MOVING;
 		}
 	}
-	else if (bol_Ducking == true)
+	else if (sta_Current.Ducking == true)
 	{
-		if (bol_Rolling == true)
+		if (sta_Current.Rolling == true)
 		{
-			cs_CurrentState = CS_ROLL;
+			sta_Current.CurrentState = CS_ROLL;
 		}
 		else
 		{
-			cs_CurrentState = CS_DUCK;
+			sta_Current.CurrentState = CS_DUCK;
 		}
 	}
-	else if (bol_Jumping == true)
+	else if (sta_Current.Jumping == true)
 	{
-		cs_CurrentState = CS_JUMP;
+		sta_Current.CurrentState = CS_JUMP;
 	}
-	else if (bol_Falling == true)
+	else if (sta_Current.Falling == true)
 	{
-		cs_CurrentState = CS_AIR;
+		sta_Current.CurrentState = CS_AIR;
 	}
 	else
 	{
-		cs_CurrentState = CS_GROUND_FACE;
+		sta_Current.CurrentState = CS_GROUND_FACE;
 	}
 }
 
@@ -192,7 +202,7 @@ void Player::StateDetector()
 Animation Player::CurrentAnimationFunc()
 {
 	
-	switch (cs_CurrentState)
+	switch (sta_Current.CurrentState)
 	{
 	case CS_BLOCK:
 		return ani_Block;
@@ -230,44 +240,41 @@ Animation Player::CurrentAnimationFunc()
 	}
 }
 
-// changes player information based on State
-void Player::Manager()
+// Inputs States, outputs Actions
+void Player::Manager(float ElapsedTime)
 {
-	if (bol_MovingL == true)
+	if (sta_Current.MovingL == true)
 	{
-		vec_Velocity.x -= flo_Move_Speed;
+		vec_Velocity.x -= Att_Stats.MovementSpeed * ElapsedTime;
 	}
 
-	if (bol_MovingR == true)
+	if (sta_Current.MovingR == true)
 	{
-		vec_Velocity.x += flo_Move_Speed;
+		vec_Velocity.x += Att_Stats.MovementSpeed * ElapsedTime;
 	}
 
-	if (bol_Jumping == true)
+	if (sta_Current.Jumping == true)
 	{
-		ProcessJump();
+		ProcessJump(ElapsedTime);
 	}
 
-	if (bol_Rolling == true)
+	if (sta_Current.Rolling == true)
 	{
-		ProcessRoll();
+		ProcessRoll(ElapsedTime);
 	}
 }
 
-
-
 //---------------Misc Functions-----------------------------
-
 
 void Player::CopyState(ComplexState holder)
 {
 	cs_StateHolder = holder;
-	bol_FacingHolder = bol_Facing;
+	bol_FacingHolder = sta_Current.Facing;
 }
 
 bool Player::CompareState()
 {
-	if (cs_StateHolder != cs_CurrentState)
+	if (cs_StateHolder != sta_Current.CurrentState)
 	{
 		return true;
 	}

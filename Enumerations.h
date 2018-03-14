@@ -34,6 +34,16 @@ enum ComplexState
 	CS_AIR_MELEE
 };
 
+enum AIState
+{
+	PATROL,
+	CHASE,
+	ATTACK,
+	DEFEND,
+	PROTECT,
+	FLEE
+};
+
 enum moveType
 {
 	MOVE_UP,

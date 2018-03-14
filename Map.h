@@ -18,12 +18,14 @@ private:
 public:
 	Map();
 
+	int int_NumEnemies;
+
 	// Maps Physical Information
 	std::vector<CollisionObject> col_CollisionData;
 	std::vector<SlopeObject> slo_SlopeData;
 	std::vector<PlatformObject> pla_PlatformData;
 	std::vector<EnemyType> et_EnemyData;
-	std::vector<sf::Vector2f> vec_EnemySpawn;
+	
 
 	// Maps Textures
 	sf::Texture txu_BackgroundImage;
@@ -31,7 +33,7 @@ public:
 
 	// Spawn Points
 	sf::Vector2f vec_PlayerSpawn;
-	
+	std::vector<sf::Vector2f> vec_EnemySpawn;
 
 };
 

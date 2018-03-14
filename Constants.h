@@ -16,7 +16,7 @@ const bool LEFT(false);
 const bool VERTICAL(true);
 const bool HORIZONTAL(false);
 
-const float GRAVITY(1.0);
+const float GRAVITY(24.0);
 
 const int MAXSLOPES(20);
 const int MAXCOLLISIONS(100);

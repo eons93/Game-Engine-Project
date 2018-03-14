@@ -19,8 +19,6 @@ public:
 	bool bol_Barrier;
 	PlatformType pt_Type;					
 
-	sf::Text txt_Identifier;
-
 };
 
 class SlopeObject
