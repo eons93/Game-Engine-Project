@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Enumerations.h"
+#include "GeneralFunctions.h"
 #include <iostream>
 
 
@@ -9,12 +10,18 @@ Player::Player()
 	// Load Assets
 	LoadAnimations();
 
-	// Load image to texture then apply to Player's Sprite
+	// Current Sprite
 	spr_CurrentSprite.setTexture(ani_CurrentAnimatation.txu_Source);
 	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate(0));
-
-	//Set Origin
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
+
+	// Arm
+	rec_Arm.setSize(sf::Vector2f(96, 4));
+	rec_Arm.setOrigin(sf::Vector2f(2, 2));
+	rec_Arm.setFillColor(sf::Color(255, 0, 255));
+	rec_Arm.setOutlineThickness(-1);
+	rec_Arm.setOutlineColor(sf::Color::White);
+	//rec_Arm.setScale(-1.0, 1.0);
 
 	//Set Default Position
 	vec_Position.x = 500;
@@ -43,19 +50,44 @@ Player::Player()
 	sta_Current.CanJump = true;
 
 	//Set Stats
-	Att_Stats.MovementSpeed = 256.0;
+	att_Stats.Health = 1000.0;
+	att_Stats.Armor = 100;
+	att_Stats.Shield = 100;
+	att_Stats.MovementSpeed = 256.0;
+
+	att_Stats.MeleeAttack.type = MELEE;
+	att_Stats.MeleeAttack.Damage = 50;
+	att_Stats.MeleeAttack.AttackSpeed = 1;
+	att_Stats.MeleeAttack.CritChance = 0.1;
+	att_Stats.MeleeAttack.CritDamage = 2.0;
+	att_Stats.MeleeAttack.Range = BitConvert64(1.5);
+	att_Stats.MeleeAttack.AngleOffset = 0;
+	att_Stats.MeleeAttack.BottomOffset = 48;
+	att_Stats.MeleeAttack.TopOffset = 48;
+
+	att_Stats.RangeAttack.type = MELEE;
+	att_Stats.RangeAttack.Damage = 50;
+	att_Stats.RangeAttack.AttackSpeed = 1;
+	att_Stats.RangeAttack.CritChance = 0.1;
+	att_Stats.RangeAttack.CritDamage = 2.0;
+	att_Stats.RangeAttack.Range = BitConvert64(1.5);
+	att_Stats.RangeAttack.AngleOffset = 0;
+	att_Stats.RangeAttack.BottomOffset = 48;
+	att_Stats.RangeAttack.TopOffset = 48;
+
 
 }
 
+/*
 // Updates player stats
 void Player::UpdatePhase1(float ElapsedTime)
 {
 	// Apply action effects
 	Manager(ElapsedTime);
-}
+}*/
 
 // applies updated player stats
-void Player::UpdatePhase2(float ElapsedTime)
+void Player::UpdatePlayer(float ElapsedTime, float angle)
 {
 	StateDetector();
 	ReverseSprite();
@@ -84,7 +116,8 @@ void Player::UpdatePhase2(float ElapsedTime)
 
 	spr_CurrentSprite.setPosition(vec_Position);
 	CopyState(sta_Current.CurrentState);
-
+	rec_Arm.setPosition(vec_Position);
+	rec_Arm.setRotation(-angle - 90);
 	
 	sta_Current.Falling = true;
 }
@@ -104,6 +137,11 @@ sf::Sprite Player::GetSprite()
 	return spr_CurrentSprite;
 }
 
+sf::RectangleShape Player::GetArm()
+{
+	return rec_Arm;
+}
+
 sf::Vector2f Player::GetPosition()
 {
 	return spr_CurrentSprite.getPosition();
@@ -121,7 +159,7 @@ States Player::GetState()
 
 Attributes Player::GetAttributes()
 {
-	return Att_Stats;
+	return att_Stats;
 }
 
 float Player::GetCurrentHealth()
@@ -155,10 +193,34 @@ void Player::StateDetector()
 		//Moving (jump, fall, ground), 
 		//Duck (rolling, not), 
 		//Jump, 
+		//Fall,
 		//Block, 
 		//IDLE
 
-	if (sta_Current.MovingL || sta_Current.MovingR == true)
+	if (sta_Current.Shooting == true)
+	{
+		if (sta_Current.Falling == true || sta_Current.Jumping == true)
+		{
+			sta_Current.CurrentState = CS_AIR_SHOOT;
+		}
+		else
+		{
+			sta_Current.CurrentState = CS_GROUND_SHOOT;
+		}
+	}
+	else if (sta_Current.Meleeing == true)
+	{
+		if (sta_Current.Falling == true || sta_Current.Jumping == true)
+		{
+			sta_Current.CurrentState = CS_AIR_MELEE;
+		}
+		else
+		{
+			sta_Current.CurrentState = CS_GROUND_MELEE;
+		}
+	}
+
+	else if (sta_Current.MovingL || sta_Current.MovingR == true)
 	{
 		if (sta_Current.Jumping == true)
 		{
@@ -240,17 +302,18 @@ Animation Player::CurrentAnimationFunc()
 	}
 }
 
+/*
 // Inputs States, outputs Actions
 void Player::Manager(float ElapsedTime)
 {
 	if (sta_Current.MovingL == true)
 	{
-		vec_Velocity.x -= Att_Stats.MovementSpeed * ElapsedTime;
+		vec_Velocity.x -= att_Stats.MovementSpeed * ElapsedTime;
 	}
 
 	if (sta_Current.MovingR == true)
 	{
-		vec_Velocity.x += Att_Stats.MovementSpeed * ElapsedTime;
+		vec_Velocity.x += att_Stats.MovementSpeed * ElapsedTime;
 	}
 
 	if (sta_Current.Jumping == true)
@@ -262,7 +325,7 @@ void Player::Manager(float ElapsedTime)
 	{
 		ProcessRoll(ElapsedTime);
 	}
-}
+}*/
 
 //---------------Misc Functions-----------------------------
 

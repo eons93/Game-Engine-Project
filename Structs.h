@@ -1,6 +1,27 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 
+
+
+struct Attack
+{
+	bool type;
+	float Damage;
+	float AttackSpeed;
+	float CritChance;
+	float CritDamage;
+	float Range;
+	float AngleOffset;
+	float TopOffset;
+	float BottomOffset;
+};
+
+struct Ability
+{
+	float Cooldown;
+	float Range;
+};
+
 struct Attributes
 {
 	float Health;
@@ -9,22 +30,9 @@ struct Attributes
 
 	float MovementSpeed;
 
+	Attack MeleeAttack;
+	Attack RangeAttack;
 
-};
-
-struct Attack
-{
-	float Damage;
-	float AttackSpeed;
-	float CriticalChance;
-	float CriticalDamage;
-	float Range;
-};
-
-struct Ability
-{
-	float Cooldown;
-	float Range;
 };
 
 struct States

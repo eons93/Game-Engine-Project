@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GeneralFunctions.h"
+#include "Player.h"
 #include <string>
 #include <sstream>
 
@@ -16,4 +17,10 @@ float BitConvert64(float input)
 {
 	float converted = input * 64;
 	return converted;
+}
+
+void EnemyDamage(EnemyObject &enemy, float damage)
+{
+	enemy.flo_CurrentHealth -= damage;
+	enemy.sta_Current.TookDamage = true;
 }

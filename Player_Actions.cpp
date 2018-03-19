@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include <iostream>
+#include <cmath>
 
 
 // ---------------Movement Actions-------------------
@@ -111,4 +112,73 @@ void Player::ProcessRoll(float ElapsedTime)
 void Player::DisengageRoll()
 {
 	sta_Current.Rolling = false;
+}
+
+
+void Player::EngageMelee()
+{
+	sta_Current.Meleeing = true;
+}
+
+void Player::ProcessMelee(float ElapsedTime, float angle, EnemyObject enemy)
+{
+	//Determine Slope between Player and target
+	float dX = enemy.GetPosition().x - GetPosition().x;
+	float dY = enemy.GetPosition().y - GetPosition().y;
+
+	// Compute Angle based on Slope
+	float angleEnemy = atan2(dX, dY) * 180 / PI;
+	float offset = att_Stats.MeleeAttack.AngleOffset;
+
+	if (angleEnemy < (angle + offset) || angle > (angle - offset))
+	{
+		std::cout << "Target was in range" << std::endl;
+	}
+	else
+	{
+		std::cout << "Target was not in range" << std::endl;
+	}
+
+
+	DisengageMelee();
+}
+
+void Player::DisengageMelee()
+{
+	sta_Current.Meleeing = false;
+}
+
+void Player::EngageRange()
+{
+	sta_Current.Shooting = true;
+}
+
+void Player::ProcessRange(float ElapsedTime, float angle, EnemyObject enemy)
+{
+	//Determine Slope between Player and target
+	float dX = enemy.GetPosition().x - GetPosition().x;
+	float dY = enemy.GetPosition().y - GetPosition().y;
+
+	// Compute Angle based on Slope
+	float angleEnemy = atan2(dX, dY) * 180 / PI;
+	float offset = att_Stats.MeleeAttack.AngleOffset;
+
+	if (angleEnemy < (angle + offset) || angle >(angle - offset))
+	{
+		std::cout << "Target was in range" << std::endl;
+	}
+	else
+	{
+		std::cout << "Target was not in range" << std::endl;
+	}
+
+
+
+
+	DisengageRange();
+}
+
+void Player::DisengageRange()
+{
+	sta_Current.Shooting = false;
 }

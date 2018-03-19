@@ -6,13 +6,12 @@
 void Engine::Draw()
 {
 	// Rub out the last frame
-	m_Window.clear(Color::White);
+	m_Window.clear(Color::Black);
 
 	// Draw the Level
 	m_Window.draw(rs_Background);
 	m_Window.draw(spr_LevelStructure);
 
-	
 	for (int count = 0; count < MAXCOLLISIONS; count++)
 	{
 		m_Window.draw(map_Selected.col_CollisionData[count].rs_CollisionArea);
@@ -35,19 +34,19 @@ void Engine::Draw()
 	
 	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
-		m_Window.draw(ene_Spawned[count].GetSprite());
-		m_Window.draw(ene_Spawned[count].txt_Name);
-		m_Window.draw(ene_Spawned[count].rec_Background);
-		m_Window.draw(ene_Spawned[count].rec_CurrentHealth);
+		if (ene_Spawned[count].flo_FinalDuration > 0)
+		{
+			m_Window.draw(ene_Spawned[count].GetSprite());
+			m_Window.draw(ene_Spawned[count].rec_DamageFlasher);
+			m_Window.draw(ene_Spawned[count].txt_Name);
+			m_Window.draw(ene_Spawned[count].rec_Background);
+			m_Window.draw(ene_Spawned[count].rec_CurrentHealth);
+		}
 	}
 	
-
 	// Draw Player
 	m_Window.draw(player.GetSprite());
-	
-
-	
-	
+	m_Window.draw(player.GetArm());
 
 	// Draw HUD
 	for (int count = 0; count < 20; count++)

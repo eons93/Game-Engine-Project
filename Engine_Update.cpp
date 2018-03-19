@@ -10,16 +10,21 @@ using namespace sf;
 void Engine::Update(float ElapsedTime)
 {
 	// Player Updaters
-	player.UpdatePhase1(ElapsedTime);
+	ProcessPlayer(ElapsedTime, player);
+	//player.UpdatePhase1(ElapsedTime);
 	DetectCollisionPlayer(player);
-	player.UpdatePhase2(ElapsedTime);
+	player.UpdatePlayer(ElapsedTime, flo_AngleCursor);
 
 	// Enemy Updaters
 	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
-		ProcessAI(ElapsedTime, ene_Spawned[count]);
-		DetectCollisionEnemy(ene_Spawned[count]);
-		ene_Spawned[count].Update(ElapsedTime);
+		if (ene_Spawned[count].flo_FinalDuration > 0)
+		{
+			ProcessAI(ElapsedTime, ene_Spawned[count]);
+			DetectCollisionEnemy(ene_Spawned[count]);
+			ene_Spawned[count].Update(ElapsedTime);
+			//EnemyDamage(ene_Spawned[count], 0.1);
+		}
 	}
 	
 	// Camera Updaters
@@ -223,6 +228,51 @@ void Engine::DetectCollisionPlayer(Player &player)
 					player.vec_Position.y = startPoint.y + difference + 34;
 					player.vec_Velocity.y = 0;
 				}
+			}
+		}
+	}
+}
+
+void Engine::ProcessPlayer(float ElapsedTime, Player &player)
+{
+	if (player.sta_Current.MovingL == true)
+	{
+		player.vec_Velocity.x -= player.GetAttributes().MovementSpeed * ElapsedTime;
+	}
+
+	if (player.sta_Current.MovingR == true)
+	{
+		player.vec_Velocity.x += player.GetAttributes().MovementSpeed * ElapsedTime;
+	}
+
+	if (player.sta_Current.Jumping == true)
+	{
+		player.ProcessJump(ElapsedTime);
+	}
+
+	if (player.sta_Current.Rolling == true)
+	{
+		player.ProcessRoll(ElapsedTime);
+	}
+
+	if (player.sta_Current.Meleeing == true)
+	{
+		for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+		{
+			if (ene_Spawned[count].flo_FinalDuration > 0)
+			{
+				player.ProcessMelee(ElapsedTime, flo_AngleCursor, ene_Spawned[count]);
+			}
+		}
+	}
+
+	if (player.sta_Current.Shooting == true)
+	{
+		for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+		{
+			if (ene_Spawned[count].flo_FinalDuration > 0)
+			{
+				player.ProcessRange(ElapsedTime, flo_AngleCursor, ene_Spawned[count]);
 			}
 		}
 	}

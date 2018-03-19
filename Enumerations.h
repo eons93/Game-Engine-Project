@@ -21,6 +21,7 @@ enum PlatformType
 
 enum ComplexState
 {
+	CS_DEAD,
 	CS_GROUND_FACE,
 	CS_GROUND_MOVING,
 	CS_GROUND_SHOOT,

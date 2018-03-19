@@ -129,6 +129,7 @@ void Engine::AttachMapEnemies()
 			break;
 		}
 		ene_Spawned[count].flo_CurrentHealth = ene_Spawned[count].att_Stats.Health;
+		ene_Spawned[count].sta_Current.CurrentState = CS_GROUND_FACE;
 		ene_Spawned[count].Spawn(count, map_Selected);
 	}
 }

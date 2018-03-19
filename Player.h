@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "Animation.h"
 #include "Structs.h"
+#include "Enemy.h"
 
 
 using namespace sf;
@@ -13,7 +14,7 @@ class Player
 private:
 
 	// Player's Stats
-	Attributes Att_Stats;
+	Attributes att_Stats;
 	float flo_CurrentHealth;
 
 	// Drawing Manager
@@ -21,6 +22,7 @@ private:
 	sf::Sprite spr_CurrentSprite;
 	sf::Texture txu_Texture;
 	Animation ani_CurrentAnimatation;
+	sf::RectangleShape rec_Arm;
 
 	// Animation Manager 
 	void LoadAnimations();
@@ -35,10 +37,11 @@ private:
 	bool bol_FacingHolder;
 	
 	// Action Manager
-	void Manager(float ElapsedTime);
+	//void Manager(float ElapsedTime);
 
 	// Player Animations
 	Animation ani_Idle;
+	Animation ani_Death;
 	Animation ani_Run;
 	Animation ani_Shoot;
 	Animation ani_Melee;
@@ -54,7 +57,8 @@ public:
 	Player();
 
 	// Getters
-	Sprite GetSprite();
+	sf::Sprite GetSprite();
+	sf::RectangleShape GetArm();
 	sf::Vector2f GetPosition();
 	sf::Vector2f GetVelocity();
 	States GetState();
@@ -104,7 +108,17 @@ public:
 	void ProcessRoll(float ElapsedTime);
 	void DisengageRoll();
 
+	// Melee Attack
+	void EngageMelee();
+	void ProcessMelee(float ElapsedTime, float angle, EnemyObject enemy);
+	void DisengageMelee();
+
+	// Ranged Attack
+	void EngageRange();
+	void ProcessRange(float ElapsedTime, float angle, EnemyObject enemy);
+	void DisengageRange();
+
 	// Updater
-	void UpdatePhase1(float ElapsedTime);
-	void UpdatePhase2(float ElapsedTime);
+	//void UpdatePhase1(float ElapsedTime);
+	void UpdatePlayer(float ElapsedTime, float angle);
 };

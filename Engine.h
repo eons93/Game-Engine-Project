@@ -35,6 +35,8 @@ private:
 	// Load Player
 	Player player;
 	HUD hud;
+	sf::Vector2f vec_CursorPosition;
+	float flo_AngleCursor;
 	sf::View vew_PlayerCamera;
 	sf::Vector2f vec_PlayerLocation;
 
@@ -56,6 +58,7 @@ private:
 
 	// Update Functions
 	void UpdateCamera();
+	void ProcessPlayer(float ElapsedTime, Player &player);
 	void ProcessAI(float ElapsedTime, EnemyObject &enemy);
 	void DetectCollisionPlayer(Player &Lplayer);
 	void DetectCollisionEnemy(EnemyObject &enemy);
@@ -65,9 +68,11 @@ private:
 
 	//Animations
 	Animation ani_EliteIdle;
+	Animation ani_EliteDeath;
 	Animation ani_EliteFall;
 	Animation ani_EliteRun;
 	Animation ani_GruntIdle;
+	Animation ani_GruntDeath;
 	Animation ani_GruntFall;
 	Animation ani_GruntRun;
 

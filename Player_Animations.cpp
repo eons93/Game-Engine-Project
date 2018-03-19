@@ -13,6 +13,15 @@ void Player::LoadAnimations()
 		}
 	}
 
+	//Death Animation
+	{
+		ani_Death.InitializeAnimation(4, 1);
+		if (!ani_Death.txu_Source.loadFromFile("Sprites/Player Character/Player_Death.png"))
+		{
+			std::cout << "Death source Failed to Load" << std::endl;
+		}
+	}
+
 	//Run Animation
 	{
 		ani_Run.InitializeAnimation(4, 1);
@@ -55,6 +64,42 @@ void Player::LoadAnimations()
 		if (!ani_Duck.txu_Source.loadFromFile("Sprites/Player Character/Player_Duck.png"))
 		{
 			std::cout << "Duck source Failed to Load" << std::endl;
+		}
+	}
+
+	//Range Attack (ground)
+	{
+		ani_Shoot.InitializeAnimation(4, 1);
+		if (!ani_Shoot.txu_Source.loadFromFile("Sprites/Player Character/Player_Shoot_Ground.png"))
+		{
+			std::cout << "Shoot(ground) source Failed to Load" << std::endl;
+		}
+	}
+
+	//Range Attack (Air)
+	{
+		ani_AirShoot.InitializeAnimation(4, 1);
+		if (!ani_AirShoot.txu_Source.loadFromFile("Sprites/Player Character/Player_Shoot_Air.png"))
+		{
+			std::cout << "Shoot(air) source Failed to Load" << std::endl;
+		}
+	}
+
+	//Melee Attack (ground)
+	{
+		ani_Melee.InitializeAnimation(4, 1);
+		if (!ani_Melee.txu_Source.loadFromFile("Sprites/Player Character/Player_Melee_Ground.png"))
+		{
+			std::cout << "Melee(ground) source Failed to Load" << std::endl;
+		}
+	}
+
+	//Melee Attack (air)
+	{
+		ani_AirMelee.InitializeAnimation(4, 1);
+		if (!ani_AirMelee.txu_Source.loadFromFile("Sprites/Player Character/Player_Melee_Air.png"))
+		{
+			std::cout << "Melee(air) source Failed to Load" << std::endl;
 		}
 	}
 }

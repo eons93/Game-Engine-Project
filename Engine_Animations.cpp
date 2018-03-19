@@ -19,6 +19,12 @@ void Engine::LoadAnimations()
 			std::cout << "Idle source Failed to Load for Elite" << std::endl;
 		}
 
+		ani_EliteDeath.InitializeAnimation(4, 1);
+		if (!ani_EliteDeath.txu_Source.loadFromFile("Sprites/Enemies/Enemy_Death_B.png"))
+		{
+			std::cout << "Death source Failed to Load for Elite" << std::endl;
+		}
+
 		ani_EliteFall.InitializeAnimation(1, 1);
 		if (!ani_EliteFall.txu_Source.loadFromFile("Sprites/Enemies/Enemy_Fall_B.png"))
 		{
@@ -38,6 +44,12 @@ void Engine::LoadAnimations()
 		if (!ani_GruntIdle.txu_Source.loadFromFile("Sprites/Enemies/Enemy_Idle_A.png"))
 		{
 			std::cout << "Idle source Failed to Load for Grunt" << std::endl;
+		}
+
+		ani_GruntDeath.InitializeAnimation(4, 1);
+		if (!ani_GruntDeath.txu_Source.loadFromFile("Sprites/Enemies/Enemy_Death_A.png"))
+		{
+			std::cout << "Death source Failed to Load for Grunt" << std::endl;
 		}
 
 		ani_GruntFall.InitializeAnimation(1, 1);

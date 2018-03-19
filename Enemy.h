@@ -20,6 +20,7 @@ public:
 	sf::Text txt_Name;
 	sf::RectangleShape rec_Background;
 	sf::RectangleShape rec_CurrentHealth;
+	sf::RectangleShape rec_DamageFlasher;
 
 	// Enemy Identification
 	std::string str_Name;
@@ -29,10 +30,12 @@ public:
 	// Enemy Stats
 	Attributes att_Stats;
 	float flo_CurrentHealth;
+	float flo_FinalDuration;
 
 	// Drawing Managers
 	sf::Sprite spr_CurrentSprite;
 	Animation ani_Current_State_Animation;
+	sf::Color SetFlasher(float ElapsedTime);
 
 	//Animation Managers
 	void StateDetector();
@@ -47,6 +50,7 @@ public:
 
 	// Animations
 	Animation ani_Idle;
+	Animation ani_Death;
 	Animation ani_Run;
 	Animation ani_Fall;
 

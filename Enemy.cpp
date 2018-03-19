@@ -20,13 +20,16 @@ EnemyObject::EnemyObject()
 	rec_CurrentHealth.setFillColor(sf::Color::Red);
 	rec_CurrentHealth.setSize(sf::Vector2f(48, 4));
 
-
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
+	rec_DamageFlasher.setOrigin(sf::Vector2f(32, 32));
+	rec_DamageFlasher.setSize(sf::Vector2f(64, 64));
 
 	vec_Position.x = 64 * 14.5;
 	vec_Position.y = 64 * 15;
 	vec_Velocity.x = 0;
 	vec_Velocity.y = 0;
+
+	flo_FinalDuration = 1;
 
 	//Set Default states
 	sta_Current.TookDamage = false;
@@ -45,6 +48,8 @@ EnemyObject::EnemyObject()
 
 void EnemyObject::Update(float ElapsedTime)
 {
+	
+
 	StateDetector();
 	ReverseSprite();
 	if (CompareState() == true)
@@ -68,14 +73,11 @@ void EnemyObject::Update(float ElapsedTime)
 	}
 	vec_Velocity.x = 0;
 
-	// Damage Updaters
-	
-		//spr_CurrentSprite.setColor(sf::Color(255, 127, 127, alpha));
-	
-
+	rec_DamageFlasher.setFillColor(SetFlasher(ElapsedTime));
 
 	// Sprite and Name
 	spr_CurrentSprite.setPosition(vec_Position);
+	rec_DamageFlasher.setPosition(vec_Position);
 	txt_Name.setString(str_Name);
 	txt_Name.setOrigin(sf::Vector2f(txt_Name.getGlobalBounds().width / 2, txt_Name.getGlobalBounds().height * 2));
 	txt_Name.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 40));
@@ -85,11 +87,24 @@ void EnemyObject::Update(float ElapsedTime)
 	rec_Background.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 32));
 	
 	rec_CurrentHealth.setPosition(sf::Vector2f(rec_Background.getGlobalBounds().left, rec_Background.getGlobalBounds().top));
-	rec_CurrentHealth.setSize(sf::Vector2f(CalculateHealthLength(), 4));
+	if (CalculateHealthLength() < 0)
+	{
+		rec_CurrentHealth.setSize(sf::Vector2f(0, 4));
+	}
+	else
+	{
+		rec_CurrentHealth.setSize(sf::Vector2f(CalculateHealthLength(), 4));
+	}
+	
 
 	CopyState(sta_Current.CurrentState);
 	sta_Current.TookDamage = false;
 	sta_Current.Falling = true;
+
+	if (sta_Current.CurrentState == CS_DEAD)
+	{
+		flo_FinalDuration -= ElapsedTime;
+	}
 }
 
 // Getters
@@ -159,7 +174,11 @@ void EnemyObject::StateDetector()
 	//Block, 
 	//IDLE
 
-	if (sta_Current.MovingL || sta_Current.MovingR == true)
+	if (flo_CurrentHealth <= 0)
+	{
+		sta_Current.CurrentState = CS_DEAD;
+	}
+	else if (sta_Current.MovingL || sta_Current.MovingR == true)
 	{
 		if (sta_Current.Jumping == true)
 		{
@@ -201,7 +220,7 @@ void EnemyObject::StateDetector()
 
 void EnemyObject::ReverseSprite()
 {
-	flo_CurrentHealth -= .1;
+	//flo_CurrentHealth -= .1;
 	switch (sta_Current.Facing)
 	{
 	case LEFT:
@@ -229,6 +248,9 @@ Animation EnemyObject::CurrentAnimationFunc()
 {
 	switch (sta_Current.CurrentState)
 	{
+	case CS_DEAD:
+		return ani_Death;
+		break;
 	case CS_AIR:
 		return ani_Fall;
 		break;
@@ -239,6 +261,33 @@ Animation EnemyObject::CurrentAnimationFunc()
 		return ani_Run;
 		break;
 	}
+}
+
+sf::Color EnemyObject::SetFlasher(float ElapsedTime)
+{
+	static float flasherCounter = 1.1;
+	float flasherDuration = 1;
+	sf::Color flasherColor(0, 0, 0, 0);
+
+	if (flasherCounter < flasherDuration)
+	{
+		flasherCounter += ElapsedTime;
+		flasherColor.r = (1 - flasherCounter) * 255;
+		flasherColor.a = 63;
+	}
+	else if (sta_Current.TookDamage == true)
+	{
+		flasherCounter = 0;
+		flasherColor.r = 255;
+		flasherColor.a = 63;
+	}
+	else
+	{
+		//flasherCounter = 0;
+		flasherColor.r = 0;
+		flasherColor.a = 0;
+	}
+	return flasherColor;
 }
 
 void EnemyObject::CopyState(ComplexState holder)
