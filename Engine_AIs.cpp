@@ -54,7 +54,7 @@ void Engine::EliteAI(float ElapsedTime, EnemyObject &enemy)
 		point2.x = BitConvert64(5);
 		point2.y = BitConvert64(19);
 
-		Patrol(ElapsedTime, enemy, point1, point2);
+		//Patrol(ElapsedTime, enemy, point1, point2);
 		break;
 	}
 }
@@ -105,7 +105,7 @@ void Engine::GruntAI(float ElapsedTime, EnemyObject &enemy)
 		point2.x = BitConvert64(5);
 		point2.y = BitConvert64(19);
 
-		Patrol(ElapsedTime, enemy, point1, point2);
+		//Patrol(ElapsedTime, enemy, point1, point2);
 		break;
 	}
 }

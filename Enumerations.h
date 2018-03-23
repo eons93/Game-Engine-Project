@@ -53,4 +53,11 @@ enum moveType
 	MOVE_RIGHT
 };
 
+enum HudType
+{
+	RELEASE,
+	MOVEMENT,
+	COMBAT
+};
+
 #endif

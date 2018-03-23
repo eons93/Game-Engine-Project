@@ -28,10 +28,6 @@ Player::Player()
 	vec_Position.y = 800;
 	vec_Velocity.x = 0;
 	vec_Velocity.y = 0;
-	flo_MaxX = 0;
-	flo_MinX = 0;
-	flo_MaxY = 0;
-	flo_MinY = 0;
 
 	//Set Default states
 
@@ -65,32 +61,35 @@ Player::Player()
 	att_Stats.MeleeAttack.BottomOffset = 48;
 	att_Stats.MeleeAttack.TopOffset = 48;
 
-	att_Stats.RangeAttack.type = MELEE;
+	att_Stats.RangeAttack.type = RANGE;
 	att_Stats.RangeAttack.Damage = 50;
 	att_Stats.RangeAttack.AttackSpeed = 1;
-	att_Stats.RangeAttack.CritChance = 0.1;
+	att_Stats.RangeAttack.CritChance = 0.2;
 	att_Stats.RangeAttack.CritDamage = 2.0;
-	att_Stats.RangeAttack.Range = BitConvert64(1.5);
-	att_Stats.RangeAttack.AngleOffset = 0;
-	att_Stats.RangeAttack.BottomOffset = 48;
-	att_Stats.RangeAttack.TopOffset = 48;
+	att_Stats.RangeAttack.Range = BitConvert64(5);
+	att_Stats.RangeAttack.AngleOffset = 10;
+	att_Stats.RangeAttack.BottomOffset = 0;
+	att_Stats.RangeAttack.TopOffset = 0;
 
 
 }
 
-/*
-// Updates player stats
-void Player::UpdatePhase1(float ElapsedTime)
-{
-	// Apply action effects
-	Manager(ElapsedTime);
-}*/
-
 // applies updated player stats
 void Player::UpdatePlayer(float ElapsedTime, float angle)
 {
-	StateDetector();
+	// Determine Facing from angle of cursor
+	if (angle > 0 && angle < 180)
+	{
+		sta_Current.Facing = LEFT;
+	}
+	else
+	{
+		sta_Current.Facing = RIGHT;
+	}
 	ReverseSprite();
+
+
+	StateDetector();
 	if (CompareState() == true)
 	{
 		ani_CurrentAnimatation = CurrentAnimationFunc();
@@ -111,7 +110,6 @@ void Player::UpdatePlayer(float ElapsedTime, float angle)
 		vec_Position.y += vec_Velocity.y;
 	}
 	vec_Velocity.x = 0;
-	CheckMinMax(vec_Position, vec_Velocity);
 
 
 	spr_CurrentSprite.setPosition(vec_Position);
@@ -126,9 +124,8 @@ void Player::Spawn(Map map)
 {
 	vec_Position.x = map.vec_PlayerSpawn.x;
 	vec_Position.y = map.vec_PlayerSpawn.y;
-
-	ResetMinMax(vec_Position, vec_Velocity);
 }
+
 
 //------------Getters and Setters------------------------
 
@@ -165,6 +162,11 @@ Attributes Player::GetAttributes()
 float Player::GetCurrentHealth()
 {
 	return flo_CurrentHealth;
+}
+
+DamageReport Player::GetDamageReport()
+{
+	return dr_Holder;
 }
 
 
@@ -302,31 +304,6 @@ Animation Player::CurrentAnimationFunc()
 	}
 }
 
-/*
-// Inputs States, outputs Actions
-void Player::Manager(float ElapsedTime)
-{
-	if (sta_Current.MovingL == true)
-	{
-		vec_Velocity.x -= att_Stats.MovementSpeed * ElapsedTime;
-	}
-
-	if (sta_Current.MovingR == true)
-	{
-		vec_Velocity.x += att_Stats.MovementSpeed * ElapsedTime;
-	}
-
-	if (sta_Current.Jumping == true)
-	{
-		ProcessJump(ElapsedTime);
-	}
-
-	if (sta_Current.Rolling == true)
-	{
-		ProcessRoll(ElapsedTime);
-	}
-}*/
-
 //---------------Misc Functions-----------------------------
 
 void Player::CopyState(ComplexState holder)
@@ -345,61 +322,4 @@ bool Player::CompareState()
 	{
 		return false;
 	}
-}
-
-void Player::CheckMinMax(sf::Vector2f position, sf::Vector2f velocity)
-{
-	if (position.x < flo_MinX)
-	{
-		flo_MinX = position.x;
-	}
-
-	if (position.x > flo_MaxX)
-	{
-		flo_MaxX = position.x;
-	}
-
-	if (position.y < flo_MinY)
-	{
-		flo_MinY = position.y;
-	}
-
-	if (position.y > flo_MaxY)
-	{
-		flo_MaxY = position.y;
-	}
-
-
-	if (velocity.x < flo_MinVelX)
-	{
-		flo_MinVelX = velocity.x;
-	}
-
-	if (velocity.x > flo_MaxVelX)
-	{
-		flo_MaxVelX = velocity.x;
-	}
-
-	if (velocity.y < flo_MinVelY)
-	{
-		flo_MinVelY = velocity.y;
-	}
-
-	if (velocity.y > flo_MaxVelY)
-	{
-		flo_MaxVelY = velocity.y;
-	}
-}
-
-void Player::ResetMinMax(sf::Vector2f position, sf::Vector2f velocity)
-{
-	flo_MinX = position.x;
-	flo_MaxX = position.x;
-	flo_MinY = position.y;
-	flo_MaxY = position.y;
-
-	flo_MinVelX = 0;
-	flo_MinVelY = 0;
-	flo_MaxVelX = 0;
-	flo_MaxVelY = 0;
 }

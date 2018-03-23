@@ -59,6 +59,8 @@ void Engine::start()
 	
 	while (m_Window.isOpen())
 	{
+		
+
 		// Restart the clock and save the elapsed time into dt
 		Time dt = clock.restart();
 
@@ -129,6 +131,7 @@ void Engine::AttachMapEnemies()
 			break;
 		}
 		ene_Spawned[count].flo_CurrentHealth = ene_Spawned[count].att_Stats.Health;
+		ene_Spawned[count].flo_CurrentShields = ene_Spawned[count].att_Stats.Shield;
 		ene_Spawned[count].sta_Current.CurrentState = CS_GROUND_FACE;
 		ene_Spawned[count].Spawn(count, map_Selected);
 	}

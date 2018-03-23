@@ -41,6 +41,7 @@ void Engine::Draw()
 			m_Window.draw(ene_Spawned[count].txt_Name);
 			m_Window.draw(ene_Spawned[count].rec_Background);
 			m_Window.draw(ene_Spawned[count].rec_CurrentHealth);
+			m_Window.draw(ene_Spawned[count].rec_CurrentShields);
 		}
 	}
 	

@@ -51,3 +51,13 @@ struct States
 	bool CanJump;
 	bool TookDamage;
 };
+
+struct DamageReport
+{
+	float TotalDmg;
+	float ShieldDmg;
+	float HealthDmg;
+	bool Critical;
+	bool Hit;
+
+};

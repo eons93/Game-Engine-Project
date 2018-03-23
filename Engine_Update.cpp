@@ -11,7 +11,6 @@ void Engine::Update(float ElapsedTime)
 {
 	// Player Updaters
 	ProcessPlayer(ElapsedTime, player);
-	//player.UpdatePhase1(ElapsedTime);
 	DetectCollisionPlayer(player);
 	player.UpdatePlayer(ElapsedTime, flo_AngleCursor);
 
@@ -23,7 +22,6 @@ void Engine::Update(float ElapsedTime)
 			ProcessAI(ElapsedTime, ene_Spawned[count]);
 			DetectCollisionEnemy(ene_Spawned[count]);
 			ene_Spawned[count].Update(ElapsedTime);
-			//EnemyDamage(ene_Spawned[count], 0.1);
 		}
 	}
 	
@@ -257,24 +255,12 @@ void Engine::ProcessPlayer(float ElapsedTime, Player &player)
 
 	if (player.sta_Current.Meleeing == true)
 	{
-		for (int count = 0; count < map_Selected.int_NumEnemies; count++)
-		{
-			if (ene_Spawned[count].flo_FinalDuration > 0)
-			{
-				player.ProcessMelee(ElapsedTime, flo_AngleCursor, ene_Spawned[count]);
-			}
-		}
+		player.ProcessMelee(ElapsedTime);
 	}
 
 	if (player.sta_Current.Shooting == true)
 	{
-		for (int count = 0; count < map_Selected.int_NumEnemies; count++)
-		{
-			if (ene_Spawned[count].flo_FinalDuration > 0)
-			{
-				player.ProcessRange(ElapsedTime, flo_AngleCursor, ene_Spawned[count]);
-			}
-		}
+		player.ProcessRange(ElapsedTime);
 	}
 }
 

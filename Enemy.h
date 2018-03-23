@@ -20,6 +20,7 @@ public:
 	sf::Text txt_Name;
 	sf::RectangleShape rec_Background;
 	sf::RectangleShape rec_CurrentHealth;
+	sf::RectangleShape rec_CurrentShields;
 	sf::RectangleShape rec_DamageFlasher;
 
 	// Enemy Identification
@@ -30,6 +31,7 @@ public:
 	// Enemy Stats
 	Attributes att_Stats;
 	float flo_CurrentHealth;
+	float flo_CurrentShields;
 	float flo_FinalDuration;
 
 	// Drawing Managers
@@ -62,6 +64,7 @@ public:
 	States GetState();
 	Attributes GetAttributes();
 	float GetCurrentHealth();
+	float GetCurrentShields();
 
 	// State Management
 	States sta_Current;
@@ -77,11 +80,16 @@ public:
 	bool CheckRange();
 	float CurrentHealthPercentage();
 	float CalculateHealthLength();
+	float CurrentShieldsPercentage();
+	float CalculateShieldLength();
 	AIState ais_CurrentState;
 
 	//Enemy Actions
 	void MoveLeft(float ElapsedTime);
 	void MoveRight(float ElapsedTime);
+
+
+	void recieveDamage(float incomingDmg, DamageReport &report);
 
 	void Update(float ElapsedTime);
 };

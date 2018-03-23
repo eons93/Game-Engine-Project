@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "Player.h"
+#include "GeneralFunctions.h"
 #include <iostream>
 #include <cmath>
 
 
-// ---------------Movement Actions-------------------
+// -------------------------------------MOVEMENT ACTIONS-------------------------------
 
 // Right Movement Functions
 void Player::MoveRight()
 {
-	sta_Current.Facing = RIGHT;
 	sta_Current.MovingR = true;
 }
 void Player::StopRight()
@@ -20,7 +20,6 @@ void Player::StopRight()
 // Left Movement Functions
 void Player::MoveLeft()
 {
-	sta_Current.Facing = LEFT;
 	sta_Current.MovingL = true;
 }
 void Player::StopLeft()
@@ -66,6 +65,8 @@ void Player::DisengageDuck()
 	sta_Current.Ducking = false;
 }
 
+//------------------------------------COMBAT ACTIONS----------------------------------
+
 // Roll Functions
 void Player::EngageLeftRoll()
 {
@@ -85,7 +86,6 @@ void Player::ProcessRoll(float ElapsedTime)
 	static float rollElapsed = 0;
 	float rollMovement = 512;
 
-
 	if (rollElapsed == 0)
 	{
 		bol_RollFaceHolder = sta_Current.Facing;
@@ -102,7 +102,6 @@ void Player::ProcessRoll(float ElapsedTime)
 	}
 	
 	rollElapsed += ElapsedTime;
-
 	if (rollElapsed >= rollDuration)
 	{
 		rollElapsed = 0;
@@ -115,32 +114,68 @@ void Player::DisengageRoll()
 }
 
 
-void Player::EngageMelee()
+void Player::EngageMelee(float angle, EnemyObject &enemy)
 {
 	sta_Current.Meleeing = true;
-}
+	Attack attack = att_Stats.MeleeAttack;
 
-void Player::ProcessMelee(float ElapsedTime, float angle, EnemyObject enemy)
-{
-	//Determine Slope between Player and target
-	float dX = enemy.GetPosition().x - GetPosition().x;
-	float dY = enemy.GetPosition().y - GetPosition().y;
+	sf::RectangleShape hitbox;
+	hitbox.setOrigin(sf::Vector2f(0, attack.TopOffset));
+	hitbox.setPosition(GetPosition());
 
-	// Compute Angle based on Slope
-	float angleEnemy = atan2(dX, dY) * 180 / PI;
-	float offset = att_Stats.MeleeAttack.AngleOffset;
-
-	if (angleEnemy < (angle + offset) || angle > (angle - offset))
+	if (sta_Current.Facing == LEFT)
 	{
-		std::cout << "Target was in range" << std::endl;
+		hitbox.setSize(sf::Vector2f(-attack.Range, (attack.TopOffset + attack.BottomOffset)));
 	}
 	else
 	{
+		hitbox.setSize(sf::Vector2f(attack.Range, (attack.TopOffset + attack.BottomOffset)));
+	}
+	
+	if (hitbox.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
+	{
+		dr_Holder.Hit = true;
+		float crit = getRandomNumber(0.0, 1.0);
+		std::cout << crit << std::endl;
+
+		if (crit < attack.CritChance)
+		{
+			dr_Holder.Critical = true;
+			std::cout << "Critical Hit" << std::endl;
+
+			float calcDmg = attack.Damage * attack.CritDamage;
+			dr_Holder.TotalDmg = calcDmg;
+			enemy.recieveDamage(calcDmg, dr_Holder);
+		}
+		else
+		{
+			dr_Holder.Critical = false;
+			std::cout << "Normal Attack" << std::endl;
+
+			float calcDmg = attack.Damage;
+			dr_Holder.TotalDmg = calcDmg;
+			enemy.recieveDamage(calcDmg, dr_Holder);
+		}
+	}
+	else
+	{
+		dr_Holder.Hit = false;
 		std::cout << "Target was not in range" << std::endl;
 	}
+}
 
+void Player::ProcessMelee(float ElapsedTime)
+{
+	Attack attack = att_Stats.MeleeAttack;
+	float attackDuration = attack.AttackSpeed;
+	static float attackElapsed = 0;
 
-	DisengageMelee();
+	attackElapsed += ElapsedTime;
+	if (attackElapsed >= attackDuration)
+	{
+		attackElapsed = 0;
+		DisengageMelee();
+	}
 }
 
 void Player::DisengageMelee()
@@ -148,34 +183,80 @@ void Player::DisengageMelee()
 	sta_Current.Meleeing = false;
 }
 
-void Player::EngageRange()
+void Player::EngageRange(float angle, EnemyObject &enemy)
 {
 	sta_Current.Shooting = true;
-}
+	Attack attack = att_Stats.RangeAttack;
 
-void Player::ProcessRange(float ElapsedTime, float angle, EnemyObject enemy)
-{
-	//Determine Slope between Player and target
+	// Delta X and Delta Y
 	float dX = enemy.GetPosition().x - GetPosition().x;
 	float dY = enemy.GetPosition().y - GetPosition().y;
 
-	// Compute Angle based on Slope
-	float angleEnemy = atan2(dX, dY) * 180 / PI;
-	float offset = att_Stats.MeleeAttack.AngleOffset;
+	// Enemy Angle and offsets
+	float angleEnemy = (atan2(dX, dY) * 180 / PI) + 180;
+	float posOffset = attack.AngleOffset;
+	float negOffset = -attack.AngleOffset;
 
-	if (angleEnemy < (angle + offset) || angle >(angle - offset))
+	// Alter offsets if the angle passed in is too close to the 360/0 division
+	if (angle > 0 && angle < posOffset)
 	{
-		std::cout << "Target was in range" << std::endl;
+		negOffset += 360;
+	}
+	if (angle >(360 - posOffset) && angle < 360)
+	{
+		posOffset -= 360;
+	}
+
+	// Check LOS, then Range, then If it crits
+	if (angleEnemy < (angle + posOffset) && angleEnemy >(angle + negOffset))
+	{
+		if ((dX * dX) + (dY * dY) <= (attack.Range * attack.Range) || (dX * dX) + (dY * dY) <= -(attack.Range * attack.Range))
+		{
+			dr_Holder.Hit = true;
+			float crit = getRandomNumber(0.0, 1.0);
+			std::cout << crit << std::endl;
+
+			if (crit < attack.CritChance)
+			{
+				dr_Holder.Critical = true;
+				std::cout << "Critical Hit" << std::endl;
+				float calcDmg = attack.Damage * attack.CritDamage;
+				enemy.recieveDamage(calcDmg, dr_Holder);
+			}
+			else
+			{
+				dr_Holder.Critical = false;
+				std::cout << "Normal Attack" << std::endl;
+				float calcDmg = attack.Damage;
+				enemy.recieveDamage(calcDmg, dr_Holder);
+			}
+		}
+		else
+		{
+			dr_Holder.Hit = false;
+			std::cout << "Target was not in range" << std::endl;
+		}
 	}
 	else
 	{
-		std::cout << "Target was not in range" << std::endl;
+		dr_Holder.Hit = false;
+		std::cout << "Target was not in sight" << std::endl;
 	}
 
+}
 
+void Player::ProcessRange(float ElapsedTime)
+{
+	Attack attack = att_Stats.RangeAttack;
+	float attackDuration = attack.AttackSpeed;
+	static float attackElapsed = 0;
 
-
-	DisengageRange();
+	attackElapsed += ElapsedTime;
+	if (attackElapsed >= attackDuration)
+	{
+		attackElapsed = 0;
+		DisengageRange();
+	}
 }
 
 void Player::DisengageRange()

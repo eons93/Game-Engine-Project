@@ -18,7 +18,7 @@ const bool LEFT(false);
 const bool VERTICAL(true);
 const bool HORIZONTAL(false);
 
-const float PI(3.1415926);
+const double PI(3.1415926);
 const float GRAVITY(24.0);
 
 const int MAXSLOPES(20);

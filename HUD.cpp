@@ -8,102 +8,11 @@
 
 HUD::HUD()
 {
+	ht_CurrentMode = MOVEMENT;
+
 	if (!fon_HUD_Font.loadFromFile("The Citadels.otf"))
 	{
 		std::cout << "font failed to load" << std::endl;
-	}
-
-	txt_TopLeft[1].setCharacterSize(40);
-	txt_TopLeft[1].setFillColor(sf::Color(255, 0, 0));
-	txt_TopLeft[1].setString("Health");
-
-	// Position Stats
-	{
-		txt_TopRight[1].setCharacterSize(20);
-		txt_TopRight[1].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[1].x = -24;
-		vec_BasePositionTR[1].y = 24;
-
-		txt_TopRight[2].setCharacterSize(20);
-		txt_TopRight[2].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[2].x = 0;
-		vec_BasePositionTR[2].y = 48;
-
-		txt_TopRight[3].setCharacterSize(20);
-		txt_TopRight[3].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[3].x = 0;
-		vec_BasePositionTR[3].y = 72;
-	}
-
-	// Velocity Stats
-	{
-		txt_TopRight[4].setCharacterSize(20);
-		txt_TopRight[4].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[4].x = -24;
-		vec_BasePositionTR[4].y = 96;
-
-		txt_TopRight[5].setCharacterSize(20);
-		txt_TopRight[5].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[5].x = 0;
-		vec_BasePositionTR[5].y = 120;
-
-		txt_TopRight[6].setCharacterSize(20);
-		txt_TopRight[6].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[6].x = 0;
-		vec_BasePositionTR[6].y = 144;
-	}
-
-	// State Stats
-	{
-		txt_TopRight[7].setCharacterSize(16);
-		txt_TopRight[7].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[7].x = 0;
-		vec_BasePositionTR[7].y = 180;
-
-		txt_TopRight[8].setCharacterSize(16);
-		txt_TopRight[8].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[8].x = 0;
-		vec_BasePositionTR[8].y = 200;
-
-		txt_TopRight[9].setCharacterSize(16);
-		txt_TopRight[9].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[9].x = 0;
-		vec_BasePositionTR[9].y = 220;
-
-		txt_TopRight[10].setCharacterSize(16);
-		txt_TopRight[10].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[10].x = 0;
-		vec_BasePositionTR[10].y = 240;
-
-		txt_TopRight[11].setCharacterSize(16);
-		txt_TopRight[11].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[11].x = 0;
-		vec_BasePositionTR[11].y = 260;
-
-		txt_TopRight[12].setCharacterSize(16);
-		txt_TopRight[12].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[12].x = 0;
-		vec_BasePositionTR[12].y = 280;
-
-		txt_TopRight[13].setCharacterSize(16);
-		txt_TopRight[13].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[13].x = 0;
-		vec_BasePositionTR[13].y = 300;
-
-		txt_TopRight[14].setCharacterSize(16);
-		txt_TopRight[14].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[14].x = 0;
-		vec_BasePositionTR[14].y = 320;
-
-		txt_TopRight[15].setCharacterSize(16);
-		txt_TopRight[15].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[15].x = 0;
-		vec_BasePositionTR[15].y = 340;
-
-		txt_TopRight[16].setCharacterSize(16);
-		txt_TopRight[16].setFillColor(sf::Color(255, 0, 0));
-		vec_BasePositionTR[16].x = 0;
-		vec_BasePositionTR[16].y = 360;
 	}
 
 	// Sets default values 
@@ -120,6 +29,15 @@ HUD::HUD()
 		
 		txt_TopLeft[count].setOutlineThickness(1);
 		txt_TopRight[count].setOutlineThickness(1);
+	}
+
+	for (int count = 0; count < 5; count++)
+	{
+		dr_Last[count].TotalDmg = 0;
+		dr_Last[count].ShieldDmg = 0;
+		dr_Last[count].HealthDmg = 0;
+		dr_Last[count].Hit = true;
+		dr_Last[count].Critical = false;
 	}
 }
 
@@ -142,24 +60,218 @@ void HUD::AttachCamera(sf::View camera)
 // Update values from player for display
 void HUD::UpdateHUD(Player HUDplayer)
 {	
-	txt_TopRight[1].setString("Position: " + StringConvert(HUDplayer.GetPosition().x / 64) + ", " + StringConvert(HUDplayer.GetPosition().y / 64));
-	txt_TopRight[2].setString("X Range: " + StringConvert(HUDplayer.flo_MinX) + ", " + StringConvert(HUDplayer.flo_MaxX));
-	txt_TopRight[3].setString("Y Range: " + StringConvert(HUDplayer.flo_MinY) + ", " + StringConvert(HUDplayer.flo_MaxY));
+	// Left-Bound Objects are strictly consistant 
+	txt_TopLeft[1].setCharacterSize(40);
+	txt_TopLeft[1].setFillColor(sf::Color(255, 0, 0));
+	txt_TopLeft[1].setString("Health");
 
-	txt_TopRight[4].setString("Velocity: " + StringConvert(HUDplayer.GetVelocity().x) + "   , " + StringConvert(HUDplayer.GetVelocity().y) + "    ");
-	txt_TopRight[5].setString("X Range: " + StringConvert(HUDplayer.flo_MinVelX) + ", " + StringConvert(HUDplayer.flo_MaxVelX));
-	txt_TopRight[6].setString("Y Range: " + StringConvert(HUDplayer.flo_MinVelY) + ", " + StringConvert(HUDplayer.flo_MaxVelY));
 
-	txt_TopRight[7].setString("Facing:       " + StringConvert(HUDplayer.GetState().Facing));
-	txt_TopRight[8].setString("Jumping:      " + StringConvert(HUDplayer.GetState().Jumping));
-	txt_TopRight[9].setString("Ducking:      " + StringConvert(HUDplayer.GetState().Ducking));
-	txt_TopRight[10].setString("Rolling:      " + StringConvert(HUDplayer.GetState().Rolling));
-	txt_TopRight[11].setString("Blocking:     " + StringConvert(HUDplayer.GetState().Blocking));
-	txt_TopRight[12].setString("Falling:      " + StringConvert(HUDplayer.GetState().Falling));
-	txt_TopRight[13].setString("Shooting:     " + StringConvert(HUDplayer.GetState().Shooting));
-	txt_TopRight[14].setString("Meleeing:     " + StringConvert(HUDplayer.GetState().Meleeing));
-	txt_TopRight[15].setString("Moving Left:  " + StringConvert(HUDplayer.GetState().MovingL));
-	txt_TopRight[16].setString("Moving Right: " + StringConvert(HUDplayer.GetState().MovingR));
+	// Right-Bound Objects are dependant on the HUD Mode
+	switch (ht_CurrentMode)
+	{
+	case RELEASE:
+		for (int count = 0; count < 20; count++)
+		{
+			txt_TopRight[count].setString(" ");
+		}
+		break;
+	case MOVEMENT:
+		CheckMinMax(HUDplayer.GetPosition(), HUDplayer.GetVelocity());
+
+		// Position Section
+		txt_TopRight[0].setString("Position: " + StringConvert(HUDplayer.GetPosition().x / 64) + ", " + StringConvert(HUDplayer.GetPosition().y / 64));
+		txt_TopRight[1].setString("X Range: " + StringConvert(flo_MinX) + ", " + StringConvert(flo_MaxX));
+		txt_TopRight[2].setString("Y Range: " + StringConvert(flo_MinY) + ", " + StringConvert(flo_MaxY));
+
+		{
+			txt_TopRight[0].setCharacterSize(20);
+			txt_TopRight[1].setCharacterSize(20);
+			txt_TopRight[2].setCharacterSize(20);
+
+			txt_TopRight[0].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[1].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[2].setFillColor(sf::Color(255, 0, 0));
+
+			vec_BasePositionTR[0].x = -24;
+			vec_BasePositionTR[0].y = 24;
+			vec_BasePositionTR[1].x = 0;
+			vec_BasePositionTR[1].y = 48;
+			vec_BasePositionTR[2].x = 0;
+			vec_BasePositionTR[2].y = 72;
+		}
+
+		// Velocity Section
+		txt_TopRight[3].setString("Velocity: " + StringConvert(HUDplayer.GetVelocity().x) + "   , " + StringConvert(HUDplayer.GetVelocity().y) + "    ");
+		txt_TopRight[4].setString("X Range: " + StringConvert(flo_MinVelX) + ", " + StringConvert(flo_MaxVelX));
+		txt_TopRight[5].setString("Y Range: " + StringConvert(flo_MinVelY) + ", " + StringConvert(flo_MaxVelY));
+
+		{
+			txt_TopRight[3].setCharacterSize(20);
+			txt_TopRight[4].setCharacterSize(20);
+			txt_TopRight[5].setCharacterSize(20);
+
+			txt_TopRight[3].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[4].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[5].setFillColor(sf::Color(255, 0, 0));
+
+			vec_BasePositionTR[3].x = -24;
+			vec_BasePositionTR[3].y = 96;
+			vec_BasePositionTR[4].x = 0;
+			vec_BasePositionTR[4].y = 120;
+			vec_BasePositionTR[5].x = 0;
+			vec_BasePositionTR[5].y = 144;
+		}
+
+		// States Section
+		txt_TopRight[6].setString("Facing:       " + StringConvert(HUDplayer.GetState().Facing));
+		txt_TopRight[7].setString("Jumping:      " + StringConvert(HUDplayer.GetState().Jumping));
+		txt_TopRight[8].setString("Ducking:      " + StringConvert(HUDplayer.GetState().Ducking));
+		txt_TopRight[9].setString("Rolling:      " + StringConvert(HUDplayer.GetState().Rolling));
+		txt_TopRight[10].setString("Blocking:     " + StringConvert(HUDplayer.GetState().Blocking));
+		txt_TopRight[11].setString("Falling:      " + StringConvert(HUDplayer.GetState().Falling));
+		txt_TopRight[12].setString("Shooting:     " + StringConvert(HUDplayer.GetState().Shooting));
+		txt_TopRight[13].setString("Meleeing:     " + StringConvert(HUDplayer.GetState().Meleeing));
+		txt_TopRight[14].setString("Moving Left:  " + StringConvert(HUDplayer.GetState().MovingL));
+		txt_TopRight[15].setString("Moving Right: " + StringConvert(HUDplayer.GetState().MovingR));
+
+		{
+			txt_TopRight[6].setCharacterSize(16);
+			txt_TopRight[7].setCharacterSize(16);
+			txt_TopRight[8].setCharacterSize(16);
+			txt_TopRight[9].setCharacterSize(16);
+			txt_TopRight[10].setCharacterSize(16);
+			txt_TopRight[11].setCharacterSize(16);
+			txt_TopRight[12].setCharacterSize(16);
+			txt_TopRight[13].setCharacterSize(16);
+			txt_TopRight[14].setCharacterSize(16);
+			txt_TopRight[15].setCharacterSize(16);
+
+			txt_TopRight[6].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[7].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[8].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[9].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[10].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[11].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[12].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[13].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[14].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[15].setFillColor(sf::Color(255, 0, 0));
+
+			vec_BasePositionTR[6].x = 0;
+			vec_BasePositionTR[6].y = 180;
+			vec_BasePositionTR[7].x = 0;
+			vec_BasePositionTR[7].y = 200;
+			vec_BasePositionTR[8].x = 0;
+			vec_BasePositionTR[8].y = 220;
+			vec_BasePositionTR[9].x = 0;
+			vec_BasePositionTR[9].y = 240;
+			vec_BasePositionTR[10].x = 0;
+			vec_BasePositionTR[10].y = 260;
+			vec_BasePositionTR[11].x = 0;
+			vec_BasePositionTR[11].y = 280;
+			vec_BasePositionTR[12].x = 0;
+			vec_BasePositionTR[12].y = 300;
+			vec_BasePositionTR[13].x = 0;
+			vec_BasePositionTR[13].y = 320;
+			vec_BasePositionTR[12].x = 0;
+			vec_BasePositionTR[12].y = 300;
+			vec_BasePositionTR[13].x = 0;
+			vec_BasePositionTR[13].y = 320;
+			vec_BasePositionTR[14].x = 0;
+			vec_BasePositionTR[14].y = 340;
+			vec_BasePositionTR[15].x = 0;
+			vec_BasePositionTR[15].y = 360;
+		}
+
+		// Clear Unused Lines
+		for (int count = 16; count < 20; count++)
+		{
+			txt_TopRight[count].setString("");
+			txt_TopRight[count].setCharacterSize(0);
+			txt_TopRight[count].setFillColor(sf::Color(0, 0, 0));
+			vec_BasePositionTR[count].x = 0;
+			vec_BasePositionTR[count].y = 0;
+		}
+		break;
+	case COMBAT:
+		// Output Damage Report
+		txt_TopRight[0].setString("Damage Dealt");
+		txt_TopRight[1].setString("|Hit|--|Crit|--|Total|--|Shield|--|Health| ");
+		txt_TopRight[2].setString("Last 1     " 
+			+ StringConvert(dr_Last[0].Hit) + "           " 
+			+ StringConvert(dr_Last[0].Critical) + "                "
+			+ StringConvert(dr_Last[0].TotalDmg) + "                " 
+			+ StringConvert(dr_Last[0].ShieldDmg) + "                 "
+			+ StringConvert(dr_Last[0].HealthDmg) + "   ");
+		txt_TopRight[3].setString("Last 2     " 
+			+ StringConvert(dr_Last[1].Hit) + "           "
+			+ StringConvert(dr_Last[1].Critical) + "                "
+			+ StringConvert(dr_Last[1].TotalDmg) + "                "
+			+ StringConvert(dr_Last[1].ShieldDmg) + "                 "
+			+ StringConvert(dr_Last[1].HealthDmg) + "   ");
+		txt_TopRight[4].setString("Last 3     " 
+			+ StringConvert(dr_Last[2].Hit) + "           "
+			+ StringConvert(dr_Last[2].Critical) + "                "
+			+ StringConvert(dr_Last[2].TotalDmg) + "                "
+			+ StringConvert(dr_Last[2].ShieldDmg) + "                 "
+			+ StringConvert(dr_Last[2].HealthDmg) + "   ");
+		txt_TopRight[5].setString("Last 4     " 
+			+ StringConvert(dr_Last[3].Hit) + "           "
+			+ StringConvert(dr_Last[3].Critical) + "                "
+			+ StringConvert(dr_Last[3].TotalDmg) + "                "
+			+ StringConvert(dr_Last[3].ShieldDmg) + "                 "
+			+ StringConvert(dr_Last[3].HealthDmg) + "   ");
+		txt_TopRight[6].setString("Last 5     " 
+			+ StringConvert(dr_Last[4].Hit) + "           "
+			+ StringConvert(dr_Last[4].Critical) + "                "
+			+ StringConvert(dr_Last[4].TotalDmg) + "                "
+			+ StringConvert(dr_Last[4].ShieldDmg) + "                 "
+			+ StringConvert(dr_Last[4].HealthDmg) + "   ");
+
+		{
+			txt_TopRight[0].setCharacterSize(20);
+			txt_TopRight[1].setCharacterSize(20);
+			txt_TopRight[2].setCharacterSize(20);
+			txt_TopRight[3].setCharacterSize(20);
+			txt_TopRight[4].setCharacterSize(20);
+			txt_TopRight[5].setCharacterSize(20);
+			txt_TopRight[6].setCharacterSize(20);
+
+			txt_TopRight[0].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[1].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[2].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[3].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[4].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[5].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[6].setFillColor(sf::Color(255, 0, 0));
+
+			vec_BasePositionTR[0].x = 0;
+			vec_BasePositionTR[0].y = 24;
+			vec_BasePositionTR[1].x = 0;
+			vec_BasePositionTR[1].y = 48;
+			vec_BasePositionTR[2].x = 0;
+			vec_BasePositionTR[2].y = 72;
+			vec_BasePositionTR[3].x = 0;
+			vec_BasePositionTR[3].y = 96;
+			vec_BasePositionTR[4].x = 0;
+			vec_BasePositionTR[4].y = 120;
+			vec_BasePositionTR[5].x = 0;
+			vec_BasePositionTR[5].y = 144;
+			vec_BasePositionTR[6].x = 0;
+			vec_BasePositionTR[6].y = 168;
+		}
+		
+		for (int count = 7; count < 20; count++)
+		{
+			txt_TopRight[count].setString("");
+			txt_TopRight[count].setCharacterSize(0);
+			txt_TopRight[count].setFillColor(sf::Color(0, 0, 0));
+			vec_BasePositionTR[count].x = 0;
+			vec_BasePositionTR[count].y = 0;
+		}
+
+		break;
+	}
 
 	// Lines each item up properly within screen
 	for (int count = 0; count < 20; count++)
@@ -180,4 +292,70 @@ void HUD::UpdateHUD(Player HUDplayer)
 		txt_TopLeft[count].setOrigin(0, 0);
 		txt_TopRight[count].setOrigin(txt_TopRight[count].getGlobalBounds().width, 0);
 	}
+}
+
+void HUD::CheckMinMax(sf::Vector2f position, sf::Vector2f velocity)
+{
+	if (position.x < flo_MinX)
+	{
+		flo_MinX = position.x;
+	}
+
+	if (position.x > flo_MaxX)
+	{
+		flo_MaxX = position.x;
+	}
+
+	if (position.y < flo_MinY)
+	{
+		flo_MinY = position.y;
+	}
+
+	if (position.y > flo_MaxY)
+	{
+		flo_MaxY = position.y;
+	}
+
+
+	if (velocity.x < flo_MinVelX)
+	{
+		flo_MinVelX = velocity.x;
+	}
+
+	if (velocity.x > flo_MaxVelX)
+	{
+		flo_MaxVelX = velocity.x;
+	}
+
+	if (velocity.y < flo_MinVelY)
+	{
+		flo_MinVelY = velocity.y;
+	}
+
+	if (velocity.y > flo_MaxVelY)
+	{
+		flo_MaxVelY = velocity.y;
+	}
+}
+
+void HUD::ResetMinMax(sf::Vector2f position, sf::Vector2f velocity)
+{
+	flo_MinX = position.x;
+	flo_MaxX = position.x;
+	flo_MinY = position.y;
+	flo_MaxY = position.y;
+
+	flo_MinVelX = 0;
+	flo_MinVelY = 0;
+	flo_MaxVelX = 0;
+	flo_MaxVelY = 0;
+}
+
+void HUD::UpdateReports(DamageReport _new)
+{
+	dr_Last[4] = dr_Last[3];
+	dr_Last[3] = dr_Last[2];
+	dr_Last[2] = dr_Last[1];
+	dr_Last[1] = dr_Last[0];
+	dr_Last[0] = _new;
 }

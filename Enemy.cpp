@@ -16,9 +16,11 @@ EnemyObject::EnemyObject()
 	txt_Name.setFillColor(sf::Color::White);
 
 	rec_Background.setFillColor(sf::Color::Black);
-	rec_Background.setSize(sf::Vector2f(48, 4));
+	rec_Background.setSize(sf::Vector2f(48, 8));
 	rec_CurrentHealth.setFillColor(sf::Color::Red);
 	rec_CurrentHealth.setSize(sf::Vector2f(48, 4));
+	rec_CurrentShields.setFillColor(sf::Color(0, 64, 255));
+	rec_CurrentShields.setSize(sf::Vector2f(48, 4));
 
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
 	rec_DamageFlasher.setOrigin(sf::Vector2f(32, 32));
@@ -48,8 +50,6 @@ EnemyObject::EnemyObject()
 
 void EnemyObject::Update(float ElapsedTime)
 {
-	
-
 	StateDetector();
 	ReverseSprite();
 	if (CompareState() == true)
@@ -80,13 +80,13 @@ void EnemyObject::Update(float ElapsedTime)
 	rec_DamageFlasher.setPosition(vec_Position);
 	txt_Name.setString(str_Name);
 	txt_Name.setOrigin(sf::Vector2f(txt_Name.getGlobalBounds().width / 2, txt_Name.getGlobalBounds().height * 2));
-	txt_Name.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 40));
+	txt_Name.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 42));
 
 	// Health Bar
 	rec_Background.setOrigin(sf::Vector2f(rec_Background.getGlobalBounds().width / 2, rec_Background.getGlobalBounds().height * 2));
-	rec_Background.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 32));
+	rec_Background.setPosition(sf::Vector2f(spr_CurrentSprite.getPosition().x, spr_CurrentSprite.getPosition().y - 28));
 	
-	rec_CurrentHealth.setPosition(sf::Vector2f(rec_Background.getGlobalBounds().left, rec_Background.getGlobalBounds().top));
+	rec_CurrentHealth.setPosition(sf::Vector2f(rec_Background.getGlobalBounds().left, rec_Background.getGlobalBounds().top + 4));
 	if (CalculateHealthLength() < 0)
 	{
 		rec_CurrentHealth.setSize(sf::Vector2f(0, 4));
@@ -94,6 +94,16 @@ void EnemyObject::Update(float ElapsedTime)
 	else
 	{
 		rec_CurrentHealth.setSize(sf::Vector2f(CalculateHealthLength(), 4));
+	}
+	// Shield Bar
+	rec_CurrentShields.setPosition(sf::Vector2f(rec_Background.getGlobalBounds().left, rec_Background.getGlobalBounds().top));
+	if (CalculateShieldLength() < 0)
+	{
+		rec_CurrentShields.setSize(sf::Vector2f(0, 4));
+	}
+	else
+	{
+		rec_CurrentShields.setSize(sf::Vector2f(CalculateShieldLength(), 4));
 	}
 	
 
@@ -143,6 +153,10 @@ float EnemyObject::GetCurrentHealth()
 	return flo_CurrentHealth;
 }
 
+float EnemyObject::GetCurrentShields()
+{
+	return flo_CurrentShields;
+}
 
 void EnemyObject::Spawn(int ID, Map map)
 {
@@ -159,6 +173,19 @@ float EnemyObject::CurrentHealthPercentage()
 float EnemyObject::CalculateHealthLength()
 {
 	float input = CurrentHealthPercentage();
+	float output = (input * 48) / 100;
+	return output;
+}
+
+float EnemyObject::CurrentShieldsPercentage()
+{
+	float percentShields = (flo_CurrentShields * 100) / att_Stats.Shield;
+	return percentShields;
+}
+
+float EnemyObject::CalculateShieldLength()
+{
+	float input = CurrentShieldsPercentage();
 	float output = (input * 48) / 100;
 	return output;
 }

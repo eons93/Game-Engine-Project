@@ -21,7 +21,7 @@ void Engine::LoadEnemies()
 	ene_Elite.att_Stats.MovementSpeed = 128;
 	ene_Elite.att_Stats.Health = 100;
 	ene_Elite.att_Stats.Armor = 50;
-	ene_Elite.att_Stats.Shield = 100;
+	ene_Elite.att_Stats.Shield = 200;
 
 	ene_Elite.att_Stats.MeleeAttack.type = MELEE;
 	ene_Elite.att_Stats.MeleeAttack.Damage = 50;
@@ -54,7 +54,7 @@ void Engine::LoadEnemies()
 	ene_Grunt.att_Stats.MovementSpeed = 128;
 	ene_Grunt.att_Stats.Health = 50;
 	ene_Grunt.att_Stats.Armor = 0;
-	ene_Grunt.att_Stats.Shield = 0;
+	ene_Grunt.att_Stats.Shield = 30;
 
 	ene_Grunt.att_Stats.MeleeAttack.type = MELEE;
 	ene_Grunt.att_Stats.MeleeAttack.Damage = 50;

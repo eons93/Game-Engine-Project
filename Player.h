@@ -35,9 +35,6 @@ private:
 	bool CompareState();
 	ComplexState cs_StateHolder;
 	bool bol_FacingHolder;
-	
-	// Action Manager
-	//void Manager(float ElapsedTime);
 
 	// Player Animations
 	Animation ani_Idle;
@@ -64,6 +61,7 @@ public:
 	States GetState();
 	Attributes GetAttributes();
 	float GetCurrentHealth();
+	DamageReport GetDamageReport();
 
 	// State Management
 	States sta_Current;
@@ -73,19 +71,10 @@ public:
 	sf::Vector2f vec_Velocity;
 	void Spawn(Map map);
 
-	// Misc Stats
-	float flo_MaxX;
-	float flo_MaxY;
-	float flo_MinX;
-	float flo_MinY;
-	float flo_MinVelX;
-	float flo_MaxVelX;
-	float flo_MinVelY;
-	float flo_MaxVelY;
-	void CheckMinMax(sf::Vector2f position, sf::Vector2f velocity);
-	void ResetMinMax(sf::Vector2f position, sf::Vector2f velocity);
-	 
-	// Player Actions
+	// Misc Variables
+	DamageReport dr_Holder;
+
+	//----------------Player Actions------------------
 
 	// Movement
 	void MoveRight();
@@ -109,16 +98,15 @@ public:
 	void DisengageRoll();
 
 	// Melee Attack
-	void EngageMelee();
-	void ProcessMelee(float ElapsedTime, float angle, EnemyObject enemy);
+	void EngageMelee(float angle, EnemyObject &enemy);
+	void ProcessMelee(float ElapsedTime);
 	void DisengageMelee();
 
 	// Ranged Attack
-	void EngageRange();
-	void ProcessRange(float ElapsedTime, float angle, EnemyObject enemy);
+	void EngageRange(float angle, EnemyObject &enemy);
+	void ProcessRange(float ElapsedTime);
 	void DisengageRange();
 
 	// Updater
-	//void UpdatePhase1(float ElapsedTime);
 	void UpdatePlayer(float ElapsedTime, float angle);
 };

@@ -33,7 +33,7 @@ void Engine::Patrol(float ElapsedTime, EnemyObject &enemy, sf::Vector2f point1, 
 		if (enemy.GetPosition().x < destination)
 		{
 			enemy.MoveRight(ElapsedTime);
-			EnemyDamage(enemy, .2);
+			//EnemyDamage(enemy, .2);
 		}
 		else
 		{
