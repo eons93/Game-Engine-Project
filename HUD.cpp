@@ -8,12 +8,15 @@
 
 HUD::HUD()
 {
-	ht_CurrentMode = MOVEMENT;
+	ht_CurrentMode = RELEASE;
 
 	if (!fon_HUD_Font.loadFromFile("The Citadels.otf"))
 	{
 		std::cout << "font failed to load" << std::endl;
 	}
+
+	
+
 
 	// Sets default values 
 	for (int count = 0; count < 20; count++)
@@ -33,11 +36,11 @@ HUD::HUD()
 
 	for (int count = 0; count < 5; count++)
 	{
-		dr_Last[count].TotalDmg = 0;
-		dr_Last[count].ShieldDmg = 0;
-		dr_Last[count].HealthDmg = 0;
-		dr_Last[count].Hit = true;
-		dr_Last[count].Critical = false;
+		dr_LastOutput[count].TotalDmg = 0;
+		dr_LastOutput[count].ShieldDmg = 0;
+		dr_LastOutput[count].HealthDmg = 0;
+		dr_LastOutput[count].Hit = true;
+		dr_LastOutput[count].Critical = false;
 	}
 }
 
@@ -55,16 +58,58 @@ void HUD::AttachCamera(sf::View camera)
 	flo_Bottom = camCenY + (camSizeY / 2);
 	flo_Right = -16 + camCenX + (camSizeX / 2);
 	flo_Left = 16 + camCenX - (camSizeX / 2);
+	vec_Center.x = camCenX;
+	vec_Center.y = camCenY;
 }
 
 // Update values from player for display
 void HUD::UpdateHUD(Player HUDplayer)
-{	
-	// Left-Bound Objects are strictly consistant 
-	txt_TopLeft[1].setCharacterSize(40);
-	txt_TopLeft[1].setFillColor(sf::Color(255, 0, 0));
-	txt_TopLeft[1].setString("Health");
+{
+	// Universal Components
 
+		// GameOver
+		txt_GameOver.setFont(fon_HUD_Font);
+		txt_GameOver.setCharacterSize(120);
+		txt_GameOver.setFillColor(sf::Color::Transparent);
+		txt_GameOver.setOutlineThickness(-1);
+		txt_GameOver.setOutlineColor(sf::Color::Magenta);
+		txt_GameOver.setOrigin(sf::Vector2f(txt_GameOver.getGlobalBounds().width / 2, txt_GameOver.getGlobalBounds().height / 2));
+		txt_GameOver.setPosition(vec_Center);
+		txt_GameOver.setString("GAMEOVER");
+
+		//Health and Shields Bar
+		{
+		txt_HealthBar.setString("Health");
+		txt_HealthBar.setPosition(flo_Left, flo_Top);
+		txt_HealthBar.setFillColor(sf::Color(0, 255, 0));
+		txt_ShieldsBar.setString("Shields");
+		txt_ShieldsBar.setPosition(flo_Left, flo_Top + 90);
+		txt_ShieldsBar.setFillColor(sf::Color(0, 255, 0));
+		{
+			txt_HealthBar.setFont(fon_HUD_Font);
+			txt_HealthBar.setOutlineColor(sf::Color(255, 255, 255));
+			txt_HealthBar.setCharacterSize(20);
+			txt_HealthBar.setOutlineThickness(2);
+			txt_ShieldsBar.setFont(fon_HUD_Font);
+			txt_ShieldsBar.setOutlineColor(sf::Color(255, 255, 255));
+			txt_ShieldsBar.setCharacterSize(20);
+			txt_ShieldsBar.setOutlineThickness(2);
+		}
+
+		rec_HealthBar.setPosition(flo_Left, flo_Top + 31);
+		rec_HealthBar.setSize(sf::Vector2f(HUDplayer.GetCurrentHealth() * 5, 20));
+		rec_HealthBar.setFillColor(HealthPercentColor(HUDplayer.GetCurrentHealth() * 100 / HUDplayer.GetAttributes().Health));
+		rec_ShieldsBar.setPosition(flo_Left, flo_Top + 65);
+		rec_ShieldsBar.setSize(sf::Vector2f(HUDplayer.GetCurrentShields() * 5, 20));
+		rec_ShieldsBar.setFillColor(ShieldPercentColor(HUDplayer.GetCurrentShields() * 100 / HUDplayer.GetAttributes().Shield));
+
+		rec_HealthBG.setPosition(flo_Left, flo_Top + 31);
+		rec_HealthBG.setSize(sf::Vector2f(HUDplayer.GetAttributes().Health * 5, 20));
+		rec_HealthBG.setFillColor(sf::Color(0, 0, 0));
+		rec_ShieldsBG.setPosition(flo_Left, flo_Top + 65);
+		rec_ShieldsBG.setSize(sf::Vector2f(HUDplayer.GetAttributes().Shield * 5, 20));
+		rec_ShieldsBG.setFillColor(sf::Color(0, 0, 0));
+	}
 
 	// Right-Bound Objects are dependant on the HUD Mode
 	switch (ht_CurrentMode)
@@ -198,35 +243,35 @@ void HUD::UpdateHUD(Player HUDplayer)
 		txt_TopRight[0].setString("Damage Dealt");
 		txt_TopRight[1].setString("|Hit|--|Crit|--|Total|--|Shield|--|Health| ");
 		txt_TopRight[2].setString("Last 1     " 
-			+ StringConvert(dr_Last[0].Hit) + "           " 
-			+ StringConvert(dr_Last[0].Critical) + "                "
-			+ StringConvert(dr_Last[0].TotalDmg) + "                " 
-			+ StringConvert(dr_Last[0].ShieldDmg) + "                 "
-			+ StringConvert(dr_Last[0].HealthDmg) + "   ");
+			+ StringConvert(dr_LastOutput[0].Hit) + "           " 
+			+ StringConvert(dr_LastOutput[0].Critical) + "                "
+			+ StringConvert(dr_LastOutput[0].TotalDmg) + "                " 
+			+ StringConvert(dr_LastOutput[0].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastOutput[0].HealthDmg) + "   ");
 		txt_TopRight[3].setString("Last 2     " 
-			+ StringConvert(dr_Last[1].Hit) + "           "
-			+ StringConvert(dr_Last[1].Critical) + "                "
-			+ StringConvert(dr_Last[1].TotalDmg) + "                "
-			+ StringConvert(dr_Last[1].ShieldDmg) + "                 "
-			+ StringConvert(dr_Last[1].HealthDmg) + "   ");
+			+ StringConvert(dr_LastOutput[1].Hit) + "           "
+			+ StringConvert(dr_LastOutput[1].Critical) + "                "
+			+ StringConvert(dr_LastOutput[1].TotalDmg) + "                "
+			+ StringConvert(dr_LastOutput[1].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastOutput[1].HealthDmg) + "   ");
 		txt_TopRight[4].setString("Last 3     " 
-			+ StringConvert(dr_Last[2].Hit) + "           "
-			+ StringConvert(dr_Last[2].Critical) + "                "
-			+ StringConvert(dr_Last[2].TotalDmg) + "                "
-			+ StringConvert(dr_Last[2].ShieldDmg) + "                 "
-			+ StringConvert(dr_Last[2].HealthDmg) + "   ");
+			+ StringConvert(dr_LastOutput[2].Hit) + "           "
+			+ StringConvert(dr_LastOutput[2].Critical) + "                "
+			+ StringConvert(dr_LastOutput[2].TotalDmg) + "                "
+			+ StringConvert(dr_LastOutput[2].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastOutput[2].HealthDmg) + "   ");
 		txt_TopRight[5].setString("Last 4     " 
-			+ StringConvert(dr_Last[3].Hit) + "           "
-			+ StringConvert(dr_Last[3].Critical) + "                "
-			+ StringConvert(dr_Last[3].TotalDmg) + "                "
-			+ StringConvert(dr_Last[3].ShieldDmg) + "                 "
-			+ StringConvert(dr_Last[3].HealthDmg) + "   ");
+			+ StringConvert(dr_LastOutput[3].Hit) + "           "
+			+ StringConvert(dr_LastOutput[3].Critical) + "                "
+			+ StringConvert(dr_LastOutput[3].TotalDmg) + "                "
+			+ StringConvert(dr_LastOutput[3].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastOutput[3].HealthDmg) + "   ");
 		txt_TopRight[6].setString("Last 5     " 
-			+ StringConvert(dr_Last[4].Hit) + "           "
-			+ StringConvert(dr_Last[4].Critical) + "                "
-			+ StringConvert(dr_Last[4].TotalDmg) + "                "
-			+ StringConvert(dr_Last[4].ShieldDmg) + "                 "
-			+ StringConvert(dr_Last[4].HealthDmg) + "   ");
+			+ StringConvert(dr_LastOutput[4].Hit) + "           "
+			+ StringConvert(dr_LastOutput[4].Critical) + "                "
+			+ StringConvert(dr_LastOutput[4].TotalDmg) + "                "
+			+ StringConvert(dr_LastOutput[4].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastOutput[4].HealthDmg) + "   ");
 
 		{
 			txt_TopRight[0].setCharacterSize(20);
@@ -260,8 +305,75 @@ void HUD::UpdateHUD(Player HUDplayer)
 			vec_BasePositionTR[6].x = 0;
 			vec_BasePositionTR[6].y = 168;
 		}
+
+		// Input Damage Report
+		txt_TopRight[7].setString("Damage Recieved");
+		txt_TopRight[8].setString("|Hit|--|Crit|--|Total|--|Shield|--|Health| ");
+		txt_TopRight[9].setString("Last 1     "
+			+ StringConvert(dr_LastInput[0].Hit) + "           "
+			+ StringConvert(dr_LastInput[0].Critical) + "                "
+			+ StringConvert(dr_LastInput[0].TotalDmg) + "                "
+			+ StringConvert(dr_LastInput[0].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastInput[0].HealthDmg) + "   ");
+		txt_TopRight[10].setString("Last 2     "
+			+ StringConvert(dr_LastInput[1].Hit) + "           "
+			+ StringConvert(dr_LastInput[1].Critical) + "                "
+			+ StringConvert(dr_LastInput[1].TotalDmg) + "                "
+			+ StringConvert(dr_LastInput[1].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastInput[1].HealthDmg) + "   ");
+		txt_TopRight[11].setString("Last 3     "
+			+ StringConvert(dr_LastInput[2].Hit) + "           "
+			+ StringConvert(dr_LastInput[2].Critical) + "                "
+			+ StringConvert(dr_LastInput[2].TotalDmg) + "                "
+			+ StringConvert(dr_LastInput[2].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastInput[2].HealthDmg) + "   ");
+		txt_TopRight[12].setString("Last 4     "
+			+ StringConvert(dr_LastInput[3].Hit) + "           "
+			+ StringConvert(dr_LastInput[3].Critical) + "                "
+			+ StringConvert(dr_LastInput[3].TotalDmg) + "                "
+			+ StringConvert(dr_LastInput[3].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastInput[3].HealthDmg) + "   ");
+		txt_TopRight[13].setString("Last 5     "
+			+ StringConvert(dr_LastInput[4].Hit) + "           "
+			+ StringConvert(dr_LastInput[4].Critical) + "                "
+			+ StringConvert(dr_LastInput[4].TotalDmg) + "                "
+			+ StringConvert(dr_LastInput[4].ShieldDmg) + "                 "
+			+ StringConvert(dr_LastInput[4].HealthDmg) + "   ");
+
+		{
+			txt_TopRight[7].setCharacterSize(20);
+			txt_TopRight[8].setCharacterSize(20);
+			txt_TopRight[9].setCharacterSize(20);
+			txt_TopRight[10].setCharacterSize(20);
+			txt_TopRight[11].setCharacterSize(20);
+			txt_TopRight[12].setCharacterSize(20);
+			txt_TopRight[13].setCharacterSize(20);
+
+			txt_TopRight[7].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[8].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[9].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[10].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[11].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[12].setFillColor(sf::Color(255, 0, 0));
+			txt_TopRight[13].setFillColor(sf::Color(255, 0, 0));
+
+			vec_BasePositionTR[7].x = 0;
+			vec_BasePositionTR[7].y = 224;
+			vec_BasePositionTR[8].x = 0;
+			vec_BasePositionTR[8].y = 248;
+			vec_BasePositionTR[9].x = 0;
+			vec_BasePositionTR[9].y = 272;
+			vec_BasePositionTR[10].x = 0;
+			vec_BasePositionTR[10].y = 296;
+			vec_BasePositionTR[11].x = 0;
+			vec_BasePositionTR[11].y = 320;
+			vec_BasePositionTR[12].x = 0;
+			vec_BasePositionTR[12].y = 344;
+			vec_BasePositionTR[13].x = 0;
+			vec_BasePositionTR[13].y = 368;
+		}
 		
-		for (int count = 7; count < 20; count++)
+		for (int count = 14; count < 20; count++)
 		{
 			txt_TopRight[count].setString("");
 			txt_TopRight[count].setCharacterSize(0);
@@ -351,11 +463,24 @@ void HUD::ResetMinMax(sf::Vector2f position, sf::Vector2f velocity)
 	flo_MaxVelY = 0;
 }
 
-void HUD::UpdateReports(DamageReport _new)
+void HUD::UpdateReports(bool type, DamageReport _new)
 {
-	dr_Last[4] = dr_Last[3];
-	dr_Last[3] = dr_Last[2];
-	dr_Last[2] = dr_Last[1];
-	dr_Last[1] = dr_Last[0];
-	dr_Last[0] = _new;
+	switch (type)
+	{
+	case OUTPUT:
+		dr_LastOutput[4] = dr_LastOutput[3];
+		dr_LastOutput[3] = dr_LastOutput[2];
+		dr_LastOutput[2] = dr_LastOutput[1];
+		dr_LastOutput[1] = dr_LastOutput[0];
+		dr_LastOutput[0] = _new;
+		break;
+	case INPUT:
+		dr_LastInput[4] = dr_LastInput[3];
+		dr_LastInput[3] = dr_LastInput[2];
+		dr_LastInput[2] = dr_LastInput[1];
+		dr_LastInput[1] = dr_LastInput[0];
+		dr_LastInput[0] = _new;
+	}
+
+	
 }

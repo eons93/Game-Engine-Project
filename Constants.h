@@ -18,13 +18,18 @@ const bool LEFT(false);
 const bool VERTICAL(true);
 const bool HORIZONTAL(false);
 
+const bool OUTPUT(true);
+const bool INPUT(false);
+
+//const float UNDEFINED(1 / 0);
+//const float UNDEFINEDNEG(-(1 / 0));
 const double PI(3.1415926);
 const float GRAVITY(24.0);
 
-const int MAXSLOPES(20);
-const int MAXCOLLISIONS(100);
-const int MAXPLATFORMS(30);
-const int MAXENEMIES(15);
+const int MAXSLOPES(100);
+const int MAXCOLLISIONS(200);
+const int MAXPLATFORMS(100);
+const int MAXENEMIES(100);
 
 
 

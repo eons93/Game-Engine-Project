@@ -16,7 +16,6 @@ void Animation::InitializeAnimation(int num_frames, float durationSeconds)
 	int_FrameCounter = 0;
 	int_NumFrames = num_frames;
 	float frameLength = durationSeconds / num_frames;
-	
 
 	flo_FrameMarker[0] = frameLength * 1;
 	flo_FrameMarker[1] = frameLength * 2;

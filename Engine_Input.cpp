@@ -45,91 +45,106 @@ void Engine::Input()
 			hud.ht_CurrentMode = COMBAT;
 		}
 
-		
-		//-----------PLAYER INPUT-----------------
+		if (!player.GetState().CurrentState == CS_DEAD)
+		{
+			//-----------PLAYER INPUT-----------------
 
-		// Handle the player moving Left/Right
-		if (Keyboard::isKeyPressed(Keyboard::A))
-		{
-			player.MoveLeft();
-		}
-		else
-		{
-			player.StopLeft();
-		}
-
-		if (Keyboard::isKeyPressed(Keyboard::D))
-		{
-			player.MoveRight();
-		}
-		else
-		{
-			player.StopRight();
-		}
-
-		// Handle Player Duck and Roll
-		if (Keyboard::isKeyPressed(Keyboard::S) && player.GetState().Jumping == false)
-		{
-			player.EngageDuck();
-		}
-		else
-		{
-			player.DisengageDuck();
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Left) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
-		{
-			player.EngageLeftRoll();
-		}
-		else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
-		{
-			player.EngageRightRoll();
-		}
-
-		// Handle Player Jumping
-		if (Keyboard::isKeyPressed(Keyboard::W) && player.GetState().CanJump == true)
-		{
-			player.EngageJump();
-		}
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) 
-			&& (player.sta_Current.Shooting == false && player.sta_Current.Meleeing == false))
-		{
-			int num = 0;
-
-			for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+			// Handle the player moving Left/Right
+			if (Keyboard::isKeyPressed(Keyboard::A))
 			{
-				if (ene_Spawned[count].flo_FinalDuration > 0)
+				player.MoveLeft();
+				player.recieveDamage(1);
+			}
+			else
+			{
+				player.StopLeft();
+			}
+
+			if (Keyboard::isKeyPressed(Keyboard::D))
+			{
+				player.MoveRight();
+			}
+			else
+			{
+				player.StopRight();
+			}
+
+			// Handle Player Duck and Roll
+			if (Keyboard::isKeyPressed(Keyboard::S) && player.GetState().Jumping == false)
+			{
+				player.EngageDuck();
+			}
+			else
+			{
+				player.DisengageDuck();
+			}
+			if (Keyboard::isKeyPressed(Keyboard::Left) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
+			{
+				player.EngageLeftRoll();
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Right) && (player.GetState().Ducking == true && player.GetState().Rolling == false))
+			{
+				player.EngageRightRoll();
+			}
+
+			// Handle Player Jumping
+			if (Keyboard::isKeyPressed(Keyboard::W) && player.GetState().CanJump == true)
+			{
+				player.EngageJump();
+			}
+
+			// Player Shooting
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)
+				&& (player.sta_Current.Shooting == false && player.sta_Current.Meleeing == false))
+			{
+				int num = 0;
+
+				for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 				{
-					num++;
-					player.EngageRange(flo_AngleCursor, ene_Spawned[count]);
-					hud.UpdateReports(player.GetDamageReport());
+					if (ene_Spawned[count].flo_FinalDuration > 0)
+					{
+						num++;
+						player.EngageRange(flo_AngleCursor, ene_Spawned[count]);
+						hud.UpdateReports(OUTPUT, player.GetDamageReport(OUTPUT));
+					}
+				}
+				if (num == 0)
+				{
+					EnemyObject blank;
+					player.EngageRange(flo_AngleCursor, blank);
 				}
 			}
-			if (num == 0)
+
+			// Player Blocking
+			if (Mouse::isButtonPressed(Mouse::Right))
 			{
-				EnemyObject blank;
-				player.EngageRange(flo_AngleCursor, blank);
+				player.EngageBlock();
 			}
-		}
-
-		if (Keyboard::isKeyPressed(Keyboard::F)
-			&& (player.sta_Current.Shooting == false && player.sta_Current.Meleeing == false))
-		{
-			int num = 0;
-
-			for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+			else
 			{
-				if (ene_Spawned[count].flo_FinalDuration > 0)
+				player.DisengageBlock();
+			}
+
+			// Player Meleeing
+			if (Keyboard::isKeyPressed(Keyboard::F)
+				&& (player.sta_Current.Shooting == false && player.sta_Current.Meleeing == false))
+			{
+				int num = 0;
+
+				for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 				{
-					num++;
-					player.EngageMelee(flo_AngleCursor, ene_Spawned[count]);
-					hud.UpdateReports(player.GetDamageReport());
+					if (ene_Spawned[count].flo_FinalDuration > 0)
+					{
+						num++;
+						player.EngageMelee(flo_AngleCursor, ene_Spawned[count]);
+						hud.UpdateReports(OUTPUT, player.GetDamageReport(OUTPUT));
+					}
 				}
-			}
-			if (num == 0)
-			{
-				EnemyObject blank;
-				player.EngageMelee(flo_AngleCursor, blank);
+				if (num == 0)
+				{
+					EnemyObject blank;
+					player.EngageMelee(flo_AngleCursor, blank);
+				}
 			}
 		}
 	}

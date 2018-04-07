@@ -15,7 +15,9 @@ public:
 	void InitializeCollision(PlatformType platformT, bool stopper, sf::Vector2f position, sf::Vector2f size);
 
 	//collision data
-	sf::RectangleShape rs_CollisionArea;	
+	sf::RectangleShape rs_CollisionArea;
+	sf::Vector2f vec_TrueA;
+	sf::Vector2f vec_TrueB;
 	bool bol_Barrier;
 	PlatformType pt_Type;					
 
@@ -49,10 +51,13 @@ public:
 	void InitializePlatform(sf::Vector2f position, sf::Vector2f size);
 
 	sf::RectangleShape rs_Platform;
+	sf::Vector2f vec_Position;
+	sf::Vector2f vec_Size;
 
+	/*
 	CollisionObject col_TopCollision;
 	CollisionObject col_BottomCollision;
 	CollisionObject col_LeftCollision;
-	CollisionObject col_RightCollision;
+	CollisionObject col_RightCollision;*/
 };
 

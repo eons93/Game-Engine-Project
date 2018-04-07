@@ -33,11 +33,12 @@ void Player::EngageJump()
 	sta_Current.Jumping = true;
 	sta_Current.Falling = true;
 	sta_Current.CanJump = false;
+	vec_Velocity.y = 0;
 }
 void Player::ProcessJump(float ElapsedTime)
 {
 	// Jump Action Stats
-	float jumpSpeed = 40;
+	float jumpSpeed = 45;
 	float jumpDuration = .5;
 	static float jumpElapsed = 0;
 
@@ -91,6 +92,15 @@ void Player::ProcessRoll(float ElapsedTime)
 		bol_RollFaceHolder = sta_Current.Facing;
 	}
 
+	if (rollElapsed > 0.25 && rollElapsed < 0.75)
+	{
+		sta_Current.Invincible = true;
+	}
+	else
+	{
+		sta_Current.Invincible = false;
+	}
+
 	switch (bol_RollFaceHolder)
 	{
 	case RIGHT:
@@ -113,6 +123,15 @@ void Player::DisengageRoll()
 	sta_Current.Rolling = false;
 }
 
+void Player::EngageBlock()
+{
+	sta_Current.Blocking = true;
+}
+
+void Player::DisengageBlock()
+{
+	sta_Current.Blocking = false;
+}
 
 void Player::EngageMelee(float angle, EnemyObject &enemy)
 {
@@ -134,32 +153,32 @@ void Player::EngageMelee(float angle, EnemyObject &enemy)
 	
 	if (hitbox.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
 	{
-		dr_Holder.Hit = true;
+		dr_Output.Hit = true;
 		float crit = getRandomNumber(0.0, 1.0);
 		std::cout << crit << std::endl;
 
 		if (crit < attack.CritChance)
 		{
-			dr_Holder.Critical = true;
+			dr_Output.Critical = true;
 			std::cout << "Critical Hit" << std::endl;
 
 			float calcDmg = attack.Damage * attack.CritDamage;
-			dr_Holder.TotalDmg = calcDmg;
-			enemy.recieveDamage(calcDmg, dr_Holder);
+			dr_Output.TotalDmg = calcDmg;
+			enemy.recieveDamage(calcDmg, dr_Output);
 		}
 		else
 		{
-			dr_Holder.Critical = false;
+			dr_Output.Critical = false;
 			std::cout << "Normal Attack" << std::endl;
 
 			float calcDmg = attack.Damage;
-			dr_Holder.TotalDmg = calcDmg;
-			enemy.recieveDamage(calcDmg, dr_Holder);
+			dr_Output.TotalDmg = calcDmg;
+			enemy.recieveDamage(calcDmg, dr_Output);
 		}
 	}
 	else
 	{
-		dr_Holder.Hit = false;
+		dr_Output.Hit = false;
 		std::cout << "Target was not in range" << std::endl;
 	}
 }
@@ -212,34 +231,34 @@ void Player::EngageRange(float angle, EnemyObject &enemy)
 	{
 		if ((dX * dX) + (dY * dY) <= (attack.Range * attack.Range) || (dX * dX) + (dY * dY) <= -(attack.Range * attack.Range))
 		{
-			dr_Holder.Hit = true;
+			dr_Output.Hit = true;
 			float crit = getRandomNumber(0.0, 1.0);
 			std::cout << crit << std::endl;
 
 			if (crit < attack.CritChance)
 			{
-				dr_Holder.Critical = true;
+				dr_Output.Critical = true;
 				std::cout << "Critical Hit" << std::endl;
 				float calcDmg = attack.Damage * attack.CritDamage;
-				enemy.recieveDamage(calcDmg, dr_Holder);
+				enemy.recieveDamage(calcDmg, dr_Output);
 			}
 			else
 			{
-				dr_Holder.Critical = false;
+				dr_Output.Critical = false;
 				std::cout << "Normal Attack" << std::endl;
 				float calcDmg = attack.Damage;
-				enemy.recieveDamage(calcDmg, dr_Holder);
+				enemy.recieveDamage(calcDmg, dr_Output);
 			}
 		}
 		else
 		{
-			dr_Holder.Hit = false;
+			dr_Output.Hit = false;
 			std::cout << "Target was not in range" << std::endl;
 		}
 	}
 	else
 	{
-		dr_Holder.Hit = false;
+		dr_Output.Hit = false;
 		std::cout << "Target was not in sight" << std::endl;
 	}
 
@@ -262,4 +281,36 @@ void Player::ProcessRange(float ElapsedTime)
 void Player::DisengageRange()
 {
 	sta_Current.Shooting = false;
+}
+
+void Player::recieveDamage(float incomingDmg)
+{
+	if (sta_Current.Blocking == true)
+	{
+		incomingDmg = incomingDmg * att_Stats.Block;
+	}
+	if (sta_Current.Invincible == true)
+	{
+		incomingDmg = 0;
+	}
+
+	float postShieldDmg = incomingDmg - GetCurrentShields();
+	dr_Input.ShieldDmg = GetCurrentShields() - (GetCurrentShields() - postShieldDmg);
+	flo_CurrentShields -= incomingDmg;
+
+	if (GetCurrentShields() < 0)
+	{
+		flo_CurrentShields = 0;
+	}
+	if (postShieldDmg < 0)
+	{
+		postShieldDmg = 0;
+	}
+
+	// Calculate Damage Reduction from Armor Value
+	float reduct = ArmorReduction(att_Stats.Armor);
+	float postArmorDmg = postShieldDmg * reduct;
+	dr_Input.HealthDmg = postArmorDmg;
+	flo_CurrentHealth -= postArmorDmg;
+	sta_Current.TookDamage = true;
 }

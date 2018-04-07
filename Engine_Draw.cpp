@@ -12,24 +12,21 @@ void Engine::Draw()
 	m_Window.draw(rs_Background);
 	m_Window.draw(spr_LevelStructure);
 
-	for (int count = 0; count < MAXCOLLISIONS; count++)
+	for (int count = 0; count < map_Selected.int_NumColl; count++)
 	{
 		m_Window.draw(map_Selected.col_CollisionData[count].rs_CollisionArea);
 	}
-	for (int count = 0; count < MAXSLOPES; count++)
+	for (int count = 0; count < map_Selected.int_NumSlop; count++)
 	{
 		m_Window.draw(map_Selected.slo_SlopeData[count].col_BottomCollision.rs_CollisionArea);
 		m_Window.draw(map_Selected.slo_SlopeData[count].col_TopCollision.rs_CollisionArea);
 		m_Window.draw(map_Selected.slo_SlopeData[count].col_LeftCollision.rs_CollisionArea);
 		m_Window.draw(map_Selected.slo_SlopeData[count].col_RightCollision.rs_CollisionArea);
 	}
-	for (int count = 0; count < MAXPLATFORMS; count++)
+	
+	for (int count = 0; count < map_Selected.int_NumPlat; count++)
 	{
 		m_Window.draw(map_Selected.pla_PlatformData[count].rs_Platform);
-		m_Window.draw(map_Selected.pla_PlatformData[count].col_BottomCollision.rs_CollisionArea);
-		m_Window.draw(map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea);
-		m_Window.draw(map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea);
-		m_Window.draw(map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea);
 	}
 	
 	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
@@ -37,6 +34,7 @@ void Engine::Draw()
 		if (ene_Spawned[count].flo_FinalDuration > 0)
 		{
 			m_Window.draw(ene_Spawned[count].GetSprite());
+			m_Window.draw(ene_Spawned[count].GetArm());
 			m_Window.draw(ene_Spawned[count].rec_DamageFlasher);
 			m_Window.draw(ene_Spawned[count].txt_Name);
 			m_Window.draw(ene_Spawned[count].rec_Background);
@@ -46,10 +44,26 @@ void Engine::Draw()
 	}
 	
 	// Draw Player
-	m_Window.draw(player.GetSprite());
-	m_Window.draw(player.GetArm());
+	if (player.GetFinalDuration() > 0)
+	{
+		m_Window.draw(player.GetSprite());
+		m_Window.draw(player.GetArm());
+		m_Window.draw(player.GetFlasher());
+	}
+	else
+	{
+		m_Window.draw(hud.txt_GameOver);
+	}
+	
 
 	// Draw HUD
+	m_Window.draw(hud.txt_HealthBar);
+	m_Window.draw(hud.txt_ShieldsBar);
+	m_Window.draw(hud.rec_HealthBG);
+	m_Window.draw(hud.rec_ShieldsBG);
+	m_Window.draw(hud.rec_HealthBar);
+	m_Window.draw(hud.rec_ShieldsBar);
+
 	for (int count = 0; count < 20; count++)
 	{
 		m_Window.draw(hud.txt_TopLeft[count]);

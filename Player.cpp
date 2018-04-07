@@ -15,13 +15,15 @@ Player::Player()
 	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate(0));
 	spr_CurrentSprite.setOrigin(sf::Vector2f(32, 32));
 
-	// Arm
-	rec_Arm.setSize(sf::Vector2f(96, 4));
-	rec_Arm.setOrigin(sf::Vector2f(2, 2));
-	rec_Arm.setFillColor(sf::Color(255, 0, 255));
-	rec_Arm.setOutlineThickness(-1);
-	rec_Arm.setOutlineColor(sf::Color::White);
-	//rec_Arm.setScale(-1.0, 1.0);
+	// Arm Sprite
+	spr_Arm.setTexture(txu_CurrentArm);                
+	spr_Arm.setOrigin(sf::Vector2f(2, 2));            
+	spr_Arm.setTextureRect(sf::IntRect(0, 0, 24, 4)); 
+	
+	// Damage Flasher Overlay
+	rec_DamageFlasher.setOrigin(sf::Vector2f(32, 32));    
+	rec_DamageFlasher.setSize(sf::Vector2f(64, 64));
+	
 
 	//Set Default Position
 	vec_Position.x = 500;
@@ -42,31 +44,39 @@ Player::Player()
 	sta_Current.Meleeing = false;
 	sta_Current.MovingL = false;
 	sta_Current.MovingR = false;
+	sta_Current.ArmState = AIMING;
 	sta_Current.CurrentState = CS_GROUND_FACE;
 	sta_Current.CanJump = true;
+	sta_Current.Invincible = false;
 
 	//Set Stats
-	att_Stats.Health = 1000.0;
+	att_Stats.Health = 200.0;
 	att_Stats.Armor = 100;
-	att_Stats.Shield = 100;
+	att_Stats.Shield = 200.0;
 	att_Stats.MovementSpeed = 256.0;
+	att_Stats.Block = 0.1;
+	att_Stats.Dodge = 1.5;
+
+	flo_CurrentHealth = att_Stats.Health;
+	flo_CurrentShields = att_Stats.Shield;
+	flo_FinalDuration = 1;
 
 	att_Stats.MeleeAttack.type = MELEE;
-	att_Stats.MeleeAttack.Damage = 50;
+	att_Stats.MeleeAttack.Damage = 20;
 	att_Stats.MeleeAttack.AttackSpeed = 1;
 	att_Stats.MeleeAttack.CritChance = 0.1;
 	att_Stats.MeleeAttack.CritDamage = 2.0;
-	att_Stats.MeleeAttack.Range = BitConvert64(1.5);
+	att_Stats.MeleeAttack.Range = X_64(1.5);
 	att_Stats.MeleeAttack.AngleOffset = 0;
 	att_Stats.MeleeAttack.BottomOffset = 48;
 	att_Stats.MeleeAttack.TopOffset = 48;
 
 	att_Stats.RangeAttack.type = RANGE;
-	att_Stats.RangeAttack.Damage = 50;
+	att_Stats.RangeAttack.Damage = 20;
 	att_Stats.RangeAttack.AttackSpeed = 1;
 	att_Stats.RangeAttack.CritChance = 0.2;
 	att_Stats.RangeAttack.CritDamage = 2.0;
-	att_Stats.RangeAttack.Range = BitConvert64(5);
+	att_Stats.RangeAttack.Range = X_64(5);
 	att_Stats.RangeAttack.AngleOffset = 10;
 	att_Stats.RangeAttack.BottomOffset = 0;
 	att_Stats.RangeAttack.TopOffset = 0;
@@ -78,11 +88,11 @@ Player::Player()
 void Player::UpdatePlayer(float ElapsedTime, float angle)
 {
 	// Determine Facing from angle of cursor
-	if (angle > 0 && angle < 180)
+	if (angle > 0 && angle < 180)     
 	{
 		sta_Current.Facing = LEFT;
 	}
-	else
+	else                              
 	{
 		sta_Current.Facing = RIGHT;
 	}
@@ -94,7 +104,24 @@ void Player::UpdatePlayer(float ElapsedTime, float angle)
 	{
 		ani_CurrentAnimatation = CurrentAnimationFunc();
 	}
-	spr_CurrentSprite.setTextureRect(ani_CurrentAnimatation.Animate(ElapsedTime));
+	sf::IntRect capture(ani_CurrentAnimatation.Animate(ElapsedTime));
+	if (sta_Current.Ducking == true)
+	{
+		capture.height = capture.height / 2;
+		spr_CurrentSprite.setOrigin(32, 0);
+		rec_DamageFlasher.setOrigin(32, 0);
+		rec_DamageFlasher.setSize(sf::Vector2f(64, 32));
+	}
+	else
+	{
+		spr_CurrentSprite.setOrigin(32, 32);
+		rec_DamageFlasher.setOrigin(32, 32);
+		rec_DamageFlasher.setSize(sf::Vector2f(64, 64));
+	}
+	spr_CurrentSprite.setTextureRect(capture);
+	txu_CurrentArm = CurrentArmFunc();   
+	spr_Arm.setTextureRect(sf::IntRect(0, 0, 48, 4));   
+	
 
 	// Apply Gravity and Velocity to Position
 	if (sta_Current.Falling == true)
@@ -111,13 +138,29 @@ void Player::UpdatePlayer(float ElapsedTime, float angle)
 	}
 	vec_Velocity.x = 0;
 
+	// Place Health and Shields within limits
+	if (flo_CurrentHealth > att_Stats.Health)
+	{
+		flo_CurrentHealth = att_Stats.Health;
+	}
+	if (flo_CurrentShields > att_Stats.Shield)
+	{
+		flo_CurrentShields = att_Stats.Shield;
+	}
 
 	spr_CurrentSprite.setPosition(vec_Position);
 	CopyState(sta_Current.CurrentState);
-	rec_Arm.setPosition(vec_Position);
-	rec_Arm.setRotation(-angle - 90);
-	
+	spr_Arm.setPosition(vec_Position);            
+	spr_Arm.setRotation(-angle - 90); 
+	rec_DamageFlasher.setPosition(vec_Position);
+	rec_DamageFlasher.setFillColor(SetFlasher(ElapsedTime));
+
+	sta_Current.TookDamage = false;
 	sta_Current.Falling = true;
+	if (sta_Current.CurrentState == CS_DEAD)
+	{
+		flo_FinalDuration -= ElapsedTime;
+	}
 }
 
 void Player::Spawn(Map map)
@@ -134,9 +177,14 @@ sf::Sprite Player::GetSprite()
 	return spr_CurrentSprite;
 }
 
-sf::RectangleShape Player::GetArm()
+sf::Sprite Player::GetArm()
 {
-	return rec_Arm;
+	return spr_Arm;
+}
+
+sf::RectangleShape Player::GetFlasher()
+{
+	return rec_DamageFlasher;
 }
 
 sf::Vector2f Player::GetPosition()
@@ -154,7 +202,7 @@ States Player::GetState()
 	return sta_Current;
 }
 
-Attributes Player::GetAttributes()
+PlayerAttributes Player::GetAttributes()
 {
 	return att_Stats;
 }
@@ -164,9 +212,28 @@ float Player::GetCurrentHealth()
 	return flo_CurrentHealth;
 }
 
-DamageReport Player::GetDamageReport()
+float Player::GetCurrentShields()
 {
-	return dr_Holder;
+	return flo_CurrentShields;
+}
+
+float Player::GetFinalDuration()
+{
+	return flo_FinalDuration;
+}
+
+DamageReport Player::GetDamageReport(bool type)
+{
+	switch (type)
+	{
+	case OUTPUT:
+		return dr_Output;
+		break;
+	case INPUT:
+		return dr_Input;
+		break;
+	}
+	
 }
 
 
@@ -187,54 +254,33 @@ void Player::ReverseSprite()
 }
 
 // Analyzes state variables to assign Complex State
-void Player::StateDetector()
+void Player::StateDetector()      
 {
 	//Check Order:
-		//Shoot (jump/fall, ground), 
+		//Death
 		//Melee (jump/fall, ground), 
-		//Moving (jump, fall, ground), 
-		//Duck (rolling, not), 
+		//Duck (rolling, not),
+		//Block, 
 		//Jump, 
 		//Fall,
-		//Block, 
-		//IDLE
-
-	if (sta_Current.Shooting == true)
+		//Moving (jump, fall, ground), 
+		//IDLE 
+	
+	if (flo_CurrentHealth <= 0)
 	{
-		if (sta_Current.Falling == true || sta_Current.Jumping == true)
-		{
-			sta_Current.CurrentState = CS_AIR_SHOOT;
-		}
-		else
-		{
-			sta_Current.CurrentState = CS_GROUND_SHOOT;
-		}
+		sta_Current.CurrentState = CS_DEAD;
 	}
 	else if (sta_Current.Meleeing == true)
 	{
 		if (sta_Current.Falling == true || sta_Current.Jumping == true)
 		{
 			sta_Current.CurrentState = CS_AIR_MELEE;
+			sta_Current.ArmState = NOSHOW;
 		}
 		else
 		{
 			sta_Current.CurrentState = CS_GROUND_MELEE;
-		}
-	}
-
-	else if (sta_Current.MovingL || sta_Current.MovingR == true)
-	{
-		if (sta_Current.Jumping == true)
-		{
-			sta_Current.CurrentState = CS_JUMP;
-		}
-		else if (sta_Current.Falling == true)
-		{
-			sta_Current.CurrentState = CS_AIR;
-		}
-		else
-		{
-			sta_Current.CurrentState = CS_GROUND_MOVING;
+			sta_Current.ArmState = NOSHOW;
 		}
 	}
 	else if (sta_Current.Ducking == true)
@@ -242,32 +288,67 @@ void Player::StateDetector()
 		if (sta_Current.Rolling == true)
 		{
 			sta_Current.CurrentState = CS_ROLL;
+			sta_Current.ArmState = NOSHOW;
 		}
 		else
 		{
 			sta_Current.CurrentState = CS_DUCK;
+			sta_Current.ArmState = AIMING;
+		}
+	}
+	else if (sta_Current.Blocking == true)
+	{
+		sta_Current.CurrentState = CS_BLOCK;
+		sta_Current.ArmState = NOSHOW;
+	}
+	else if (sta_Current.MovingL || sta_Current.MovingR == true)
+	{
+		if (sta_Current.Jumping == true)
+		{
+			sta_Current.CurrentState = CS_JUMP;
+			sta_Current.ArmState = AIMING;
+		}
+		else if (sta_Current.Falling == true)
+		{
+			sta_Current.CurrentState = CS_AIR;
+			sta_Current.ArmState = AIMING;
+		}
+		else
+		{
+			sta_Current.CurrentState = CS_GROUND_MOVING;
+			sta_Current.ArmState = AIMING;
 		}
 	}
 	else if (sta_Current.Jumping == true)
 	{
 		sta_Current.CurrentState = CS_JUMP;
+		sta_Current.ArmState = AIMING;
 	}
 	else if (sta_Current.Falling == true)
 	{
 		sta_Current.CurrentState = CS_AIR;
+		sta_Current.ArmState = AIMING;
 	}
 	else
 	{
 		sta_Current.CurrentState = CS_GROUND_FACE;
+		sta_Current.ArmState = AIMING;
+	}	
+		
+	if (sta_Current.Shooting == true && sta_Current.ArmState != NOSHOW)
+	{
+		sta_Current.ArmState = FIRING;
 	}
 }
 
 // Returns correct animation based on Complex State
 Animation Player::CurrentAnimationFunc()
 {
-	
 	switch (sta_Current.CurrentState)
 	{
+	case CS_DEAD:
+		return ani_Death;
+		break;
 	case CS_BLOCK:
 		return ani_Block;
 		break;
@@ -286,17 +367,11 @@ Animation Player::CurrentAnimationFunc()
 	case CS_GROUND_MOVING:
 		return ani_Run;
 		break;
-	case CS_GROUND_SHOOT:
-		return ani_Shoot;
-		break;
 	case CS_GROUND_MELEE:
 		return ani_Melee;
 		break;
 	case CS_AIR:
 		return ani_Fall;
-		break;
-	case CS_AIR_SHOOT:
-		return ani_AirShoot;
 		break;
 	case CS_AIR_MELEE:
 		return ani_AirMelee;
@@ -304,7 +379,49 @@ Animation Player::CurrentAnimationFunc()
 	}
 }
 
+sf::Texture Player::CurrentArmFunc()
+{
+	switch (sta_Current.ArmState)
+	{
+	case NOSHOW:
+		return txu_NoShow;
+		break;
+	case FIRING:
+		return txu_Firing;
+		break;
+	case AIMING:
+		return txu_Aiming;
+		break;
+	}
+}
+
 //---------------Misc Functions-----------------------------
+
+sf::Color Player::SetFlasher(float ElapsedTime)          
+{
+	static float flasherCounter = 1.1;
+	float flasherDuration = 1;
+	sf::Color flasherColor(0, 0, 0, 0);
+
+	if (flasherCounter < flasherDuration)
+	{
+		flasherCounter += ElapsedTime;
+		flasherColor.r = (1 - flasherCounter) * 255;
+		flasherColor.a = 63;
+	}
+	else if (sta_Current.TookDamage == true)
+	{
+		flasherCounter = 0;
+		flasherColor.r = 255;
+		flasherColor.a = 63;
+	}
+	else
+	{
+		flasherColor.r = 0;
+		flasherColor.a = 0;
+	}
+	return flasherColor;
+}
 
 void Player::CopyState(ComplexState holder)
 {

@@ -9,17 +9,22 @@ using namespace sf;
 
 void Engine::Update(float ElapsedTime)
 {
+	if (player.sta_Current.TookDamage == true)
+	{
+		hud.UpdateReports(INPUT, player.dr_Input);
+	}
+
 	// Player Updaters
 	ProcessPlayer(ElapsedTime, player);
 	DetectCollisionPlayer(player);
 	player.UpdatePlayer(ElapsedTime, flo_AngleCursor);
-
+	
 	// Enemy Updaters
 	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
 	{
 		if (ene_Spawned[count].flo_FinalDuration > 0)
 		{
-			ProcessAI(ElapsedTime, ene_Spawned[count]);
+			ProcessAI(ElapsedTime, ene_Spawned[count], player);
 			DetectCollisionEnemy(ene_Spawned[count]);
 			ene_Spawned[count].Update(ElapsedTime);
 		}
@@ -31,11 +36,14 @@ void Engine::Update(float ElapsedTime)
 	hud.UpdateHUD(player);
 }
 
-// Checks if player is colliding with any surface
 void Engine::DetectCollisionPlayer(Player &player)
 {
+
+	sf::Vector2f edge(0, 0);
+	sf::Vector2f difference(0, 0);
+
 	// Cycle through all surfaces
-	for (int count = 0; count < MAXCOLLISIONS; count++)
+	for (int count = 0; count < map_Selected.int_NumColl; count++)
 	{
 		// Detect surface type and apply effects
 		switch (map_Selected.col_CollisionData[count].pt_Type)
@@ -44,77 +52,64 @@ void Engine::DetectCollisionPlayer(Player &player)
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
 				&& player.GetState().Jumping == false)
 			{
-				player.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y - 32;
-				player.vec_Velocity.y = 0;
-				player.sta_Current.Falling = false;
-				player.sta_Current.CanJump = true;
+				edge.x = player.GetPosition().x;
+				edge.y = player.GetPosition().y + 33;
+
+				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				if (player.GetVelocity().y > difference.y)
+				{
+					player.vec_Velocity.y = difference.y + 1;
+					player.sta_Current.Falling = false;
+					player.sta_Current.CanJump = true;
+				}
 			}
 			break;
 		case PT_CEILING: //Set player position to bottom of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds()))
 			{
-				player.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y + 34;
-				player.vec_Velocity.y = 0;
+				edge.x = player.GetPosition().x;
+				edge.y = player.GetPosition().y - 33;
+
+				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				if (player.GetVelocity().y < difference.y)
+				{
+					player.vec_Velocity.y = difference.y + 1;
+				}
 			}
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
 				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
-				player.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x + 34;
+				edge.x = player.GetPosition().x - 33;
+				edge.y = player.GetPosition().y;
+
+				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				if (player.GetVelocity().x < difference.x)
+				{
+					player.vec_Velocity.x = difference.x + 1;
+				}
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
 				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
-				player.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x - 34;
+				edge.x = player.GetPosition().x + 33;
+				edge.y = player.GetPosition().y;
+
+				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				if (player.GetVelocity().x > difference.x)
+				{
+					player.vec_Velocity.x = difference.x + 1;
+				}
 			}
 			break;
 		}
 	}
 
-	// Cycle through all platforms
-	for (int count = 0; count < MAXPLATFORMS; count++)
-	{
-		// If player is colliding with floor surface of platform and is not jumping
-		//		--Set Position to proper
-		//		--Set velocity to 0
-		//		--Allow player to jump and not be in falling state
-		if (map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& player.GetState().Jumping == false)
-		{
-			player.vec_Position.y = map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getPosition().y - 32;
-			player.vec_Velocity.y = 0;
-			player.sta_Current.Falling = false;
-			player.sta_Current.CanJump = true;
-		}
-		// If player is colliding with ceiling surface
-		//		--Set Position to proper
-		//		--Set Velocity to 0
-		if (map_Selected.pla_PlatformData[count].col_BottomCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds()))
-		{
-			player.vec_Position.y = map_Selected.pla_PlatformData[count].col_BottomCollision.rs_CollisionArea.getPosition().y + 34;
-			player.vec_Velocity.y = 0;
-		}
-		// If player is colliding with left surface
-		//		--Set Position to proper
-		if (map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
-		{
-			player.vec_Position.x = map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getPosition().x + 34;
-		}
-		// If player is colliding with right surface
-		//		--Set Position to proper
-		if (map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-			&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
-		{
-			player.vec_Position.x = map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getPosition().x - 34;
-		}
-	}
-
 	// Cycle through all slopes
-	for (int count = 0; count < MAXSLOPES; count++)
+	for (int count = 0; count < map_Selected.int_NumSlop; count++)
 	{
 		// Placeholders
 		sf::Vector2f startPoint;
@@ -231,6 +226,7 @@ void Engine::DetectCollisionPlayer(Player &player)
 	}
 }
 
+
 void Engine::ProcessPlayer(float ElapsedTime, Player &player)
 {
 	if (player.sta_Current.MovingL == true)
@@ -264,15 +260,15 @@ void Engine::ProcessPlayer(float ElapsedTime, Player &player)
 	}
 }
 
-void Engine::ProcessAI(float ElapsedTime, EnemyObject &enemy)
+void Engine::ProcessAI(float ElapsedTime, EnemyObject &enemy, Player &player)
 {
 	switch (enemy.GetID())
 	{
 	case 1:
-		GruntAI(ElapsedTime, enemy);
+		GruntAI(ElapsedTime, enemy, player);
 		break;
 	case 2: 
-		EliteAI(ElapsedTime, enemy);
+		EliteAI(ElapsedTime, enemy, player);
 		break;
 	}
 }
@@ -280,87 +276,77 @@ void Engine::ProcessAI(float ElapsedTime, EnemyObject &enemy)
 // Checks if player is colliding with any surface
 void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 {
+	sf::Vector2f edge(0, 0);
+	sf::Vector2f difference(0, 0);
+
 	// Cycle through all surfaces
-	for (int count = 0; count < MAXCOLLISIONS; count++)
+	for (int count = 0; count < map_Selected.int_NumColl; count++)
 	{
 		// Detect surface type and apply effects
 		switch (map_Selected.col_CollisionData[count].pt_Type)
 		{
 		case PT_FLOOR: //Set player position to top of surface, zero y-velocity, stop falling and allow jumping.
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
-				//&& enemy.jumping == false)
+			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
+				&& enemy.GetState().Jumping == false)
 			{
-				enemy.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y - 32;
-				enemy.vec_Velocity.y = 0;
-				enemy.sta_Current.Falling = false;
-				//enemy.canJump = true;
+				edge.x = enemy.GetPosition().x;
+				edge.y = enemy.GetPosition().y + 33;
+
+				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				if (enemy.GetVelocity().y > difference.y)
+				{
+					enemy.vec_Velocity.y = difference.y + 1;
+					enemy.sta_Current.Falling = false;
+					enemy.sta_Current.CanJump = true;
+				}
 			}
 			break;
 		case PT_CEILING: //Set player position to bottom of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
 			{
-				enemy.vec_Position.y = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y + 34;
-				enemy.vec_Velocity.y = 0;
+				edge.x = enemy.GetPosition().x;
+				edge.y = enemy.GetPosition().y - 33;
+
+				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				if (enemy.GetVelocity().y < difference.y)
+				{
+					enemy.vec_Velocity.y = difference.y + 1;
+				}
 			}
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
 				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
-				enemy.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x + 34;
+				edge.x = enemy.GetPosition().x - 33;
+				edge.y = enemy.GetPosition().y;
+
+				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				if (enemy.GetVelocity().x < difference.x)
+				{
+					enemy.vec_Velocity.x = difference.x + 1;
+				}
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
 			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
 				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
-				enemy.vec_Position.x = map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x - 34;
+				edge.x = enemy.GetPosition().x + 33;
+				edge.y = enemy.GetPosition().y;
+
+				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				if (enemy.GetVelocity().x > difference.x)
+				{
+					enemy.vec_Velocity.x = difference.x + 1;
+				}
 			}
 			break;
 		}
 	}
 
-	// Cycle through all platforms
-	for (int count = 0; count < MAXPLATFORMS; count++)
-	{
-		// If player is colliding with floor surface of platform and is not jumping
-		//		--Set Position to proper
-		//		--Set velocity to 0
-		//		--Allow player to jump and not be in falling state
-		if (map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
-			//&& player.jumping == false)
-		{
-			enemy.vec_Position.y = map_Selected.pla_PlatformData[count].col_TopCollision.rs_CollisionArea.getPosition().y - 32;
-			enemy.vec_Velocity.y = 0;
-			enemy.sta_Current.Falling = false;
-			//enemy.canJump = true;
-		}
-		// If player is colliding with ceiling surface
-		//		--Set Position to proper
-		//		--Set Velocity to 0
-		if (map_Selected.pla_PlatformData[count].col_BottomCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
-		{
-			enemy.vec_Position.y = map_Selected.pla_PlatformData[count].col_BottomCollision.rs_CollisionArea.getPosition().y + 34;
-			enemy.vec_Velocity.y = 0;
-		}
-		// If player is colliding with left surface
-		//		--Set Position to proper
-		if (map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-			&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
-		{
-			enemy.vec_Position.x = map_Selected.pla_PlatformData[count].col_LeftCollision.rs_CollisionArea.getPosition().x + 34;
-		}
-		// If player is colliding with right surface
-		//		--Set Position to proper
-		if (map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-			&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
-		{
-			enemy.vec_Position.x = map_Selected.pla_PlatformData[count].col_RightCollision.rs_CollisionArea.getPosition().x - 34;
-		}
-	}
-
 	// Cycle through all slopes
-	for (int count = 0; count < MAXSLOPES; count++)
+	for (int count = 0; count < map_Selected.int_NumSlop; count++)
 	{
 		// Placeholders
 		sf::Vector2f startPoint;
@@ -376,8 +362,8 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 		if ((map_Selected.slo_SlopeData[count].col_TopCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
 			|| map_Selected.slo_SlopeData[count].col_BottomCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
 			|| map_Selected.slo_SlopeData[count].col_LeftCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-			|| map_Selected.slo_SlopeData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())))
-			//&& player.jumping == false)
+			|| map_Selected.slo_SlopeData[count].col_RightCollision.rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
+			&& enemy.GetState().Jumping == false)
 		{
 			// Right Slope
 			if (map_Selected.slo_SlopeData[count].bol_Inverted == false &&
@@ -401,7 +387,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 					enemy.vec_Position.y = startPoint.y - (difference / angle) - 34;
 					enemy.vec_Velocity.y = 0;
 					enemy.sta_Current.Falling = false;
-					//enemy.canJump = true;
+					enemy.sta_Current.CanJump = true;
 				}
 			}
 			//Left Slope
@@ -426,7 +412,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 					enemy.vec_Position.y = startPoint.y + (difference / angle) - 96;
 					enemy.vec_Velocity.y = 0;
 					enemy.sta_Current.Falling = false;
-					//enemy.canJump = true;
+					enemy.sta_Current.CanJump = true;
 				}
 			}
 			//Right Inverted Slope
@@ -467,7 +453,7 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 				//		--Set position to proper 
 				//		--Set Velocity to 0
 				if ((difference > 0 && difference < 68)
-					&& enemy.vec_Position.y < startPoint.y + difference + 34)
+					&& enemy.GetPosition().y < startPoint.y + difference + 34)
 				{
 					enemy.vec_Position.y = startPoint.y + difference + 34;
 					enemy.vec_Velocity.y = 0;

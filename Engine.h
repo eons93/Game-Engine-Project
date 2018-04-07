@@ -59,22 +59,40 @@ private:
 	// Update Functions
 	void UpdateCamera();
 	void ProcessPlayer(float ElapsedTime, Player &player);
-	void ProcessAI(float ElapsedTime, EnemyObject &enemy);
-	void DetectCollisionPlayer(Player &Lplayer);
+	void ProcessAI(float ElapsedTime, EnemyObject &enemy, Player &player);
+	void DetectCollisionPlayer(Player &player);
 	void DetectCollisionEnemy(EnemyObject &enemy);
 
 	//Maps
 	Map map_TestChamber;
+	Map map_Arena1;
 
 	//Animations
 	Animation ani_EliteIdle;
 	Animation ani_EliteDeath;
 	Animation ani_EliteFall;
+	Animation ani_EliteJump;
+	Animation ani_EliteMelee;
 	Animation ani_EliteRun;
+	Animation ani_EliteBlock;
+	Animation ani_EliteDuck;
+	Animation ani_EliteRoll;
+	sf::Texture txu_EliteFiring;
+	sf::Texture txu_EliteAiming;
+	sf::Texture txu_EliteNoShow;
+
 	Animation ani_GruntIdle;
 	Animation ani_GruntDeath;
 	Animation ani_GruntFall;
+	Animation ani_GruntJump;
+	Animation ani_GruntMelee;
 	Animation ani_GruntRun;
+	Animation ani_GruntBlock;
+	Animation ani_GruntDuck;
+	Animation ani_GruntRoll;
+	sf::Texture txu_GruntFiring;
+	sf::Texture txu_GruntAiming;
+	sf::Texture txu_GruntNoShow;
 
 	//Enemies
 	EnemyObject ene_Elite;
@@ -82,10 +100,17 @@ private:
 
 	//AI Components
 	void Patrol(float ElapsedTime, EnemyObject &enemy, sf::Vector2f point1, sf::Vector2f point2);
+	void Flee(float ElapsedTime, EnemyObject &enemy, float playerAngle);
+	void Chase(float ElapsedTime, EnemyObject &enemy, float playerAngle);
+	void AttackPlayer(float ElapsedTime, EnemyObject &enemy, Attack attack, Player &player);
+
+	bool CheckWalls(EnemyObject enemy, Player player);
+	bool DetectObstruction(EnemyObject enemy, Player player, LinearFunc enemy_Player, CollisionObject barrier);
 
 	//Enemy AI's
-	void GruntAI(float ElapsedTime, EnemyObject &enemy);
-	void EliteAI(float ElapsedTime, EnemyObject &enemy);
+	void GruntAI(float ElapsedTime, EnemyObject &enemy, Player player);
+	void EliteAI(float ElapsedTime, EnemyObject &enemy, Player &player);
+	
 
 public:
 	// The Engine constructor

@@ -17,11 +17,11 @@ Engine::Engine()
 	std::cout << "Map Size:              " << sizeof(Map) << std::endl;
 	std::cout << "Collision Object Size: " << sizeof(CollisionObject) << std::endl;
 	std::cout << "Slope Object Size:     " << sizeof(SlopeObject) << std::endl;
-	std::cout << "Platform Ibject Size:  " << sizeof(PlatformObject) << std::endl;
-	std::cout << "Aniamtion Size:        " << sizeof(Animation) << std::endl;
+	std::cout << "Platform Object Size:  " << sizeof(PlatformObject) << std::endl;
+	std::cout << "Animation Size:        " << sizeof(Animation) << std::endl;
 	std::cout << "Player Size:           " << sizeof(Player) << std::endl;
 
-	ene_Spawned.resize(MAXENEMIES);
+	ene_Spawned.resize(200);
 
 	// Get the screen resolution and create an SFML window and View
 	Resolution.x = VideoMode::getDesktopMode().width;
@@ -33,13 +33,33 @@ Engine::Engine()
 		"Game Engine",
 		Style::Fullscreen);
 
+	sf::Vector2f enemyPos(200, 20);
+	sf::Vector2f playerPos(400, 20);
+
+	sf::Vector2f TrueA(300, 0);
+	sf::Vector2f TrueB(300, 40);
+
+	LinearFunc enemyPlayer = LinearOf(enemyPos, playerPos);
+	LinearFunc wall = LinearOf(TrueA, TrueB);
+	sf::Vector2f intersect = IntersectOf(enemyPlayer, wall);
+
+
+	//std::cout << UNDEFINED << std::endl;
+	//std::cout << UNDEFINEDNEG << std::endl;
+	std::cout << "Enemy/Player Line: slope of " << enemyPlayer.Slope << ", intersect of " << enemyPlayer.Intercept << std::endl;
+	std::cout << "   Collision Line: slope of " << wall.Slope << ", intersect of " << wall.Intercept << std::endl;
+	std::cout << "These Lines INtersect at (" << intersect.x << ", " << intersect.y << ")" << std::endl;
+
 	// Load Level
 	LoadAnimations();
 	LoadMaps();
 	LoadEnemies();
-	AttachMap(map_TestChamber);
+	AttachMap(map_Arena1);
 	AttachTexture();
 	AttachMapEnemies();
+
+	ene_Spawned.resize(map_Selected.int_NumEnemies);
+
 	rs_Background.setSize(sf::Vector2f(Resolution.x, Resolution.y));
 	rs_Background.setOrigin(sf::Vector2f(Resolution.x / 2, Resolution.y / 2));
 	rs_Background.setPosition(sf::Vector2f(player.GetPosition().x, player.GetPosition().y));
@@ -104,6 +124,7 @@ retry:
 	frameClock.restart();
 	if (secondsChecker.asMilliseconds() >= 1000)
 	{
+		std::cout << frameCounter << std::endl;
 		frameCounter = 0;
 		secondsClock.restart();
 	}

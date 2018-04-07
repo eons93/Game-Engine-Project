@@ -6,6 +6,7 @@
 #include "Structs.h"
 
 class Map;
+class Player;
 
 using namespace sf;
 
@@ -21,7 +22,7 @@ public:
 	sf::RectangleShape rec_Background;
 	sf::RectangleShape rec_CurrentHealth;
 	sf::RectangleShape rec_CurrentShields;
-	sf::RectangleShape rec_DamageFlasher;
+	sf::RectangleShape rec_DamageFlasher;    //*******
 
 	// Enemy Identification
 	std::string str_Name;
@@ -29,20 +30,27 @@ public:
 	int int_ID;
 
 	// Enemy Stats
-	Attributes att_Stats;
+	EnemyAttributes att_Stats;
 	float flo_CurrentHealth;
 	float flo_CurrentShields;
-	float flo_FinalDuration;
+	float flo_FinalDuration;                 //*******
+
+	// Vision Stats
+	float flo_VisionRange;
+	float flo_VisionAngle;
+	float flo_VisionOffset;
 
 	// Drawing Managers
 	sf::Sprite spr_CurrentSprite;
 	Animation ani_Current_State_Animation;
-	sf::Color SetFlasher(float ElapsedTime);
+	sf::Sprite spr_Arm;
+	sf::Color SetFlasher(float ElapsedTime); //*******
 
 	//Animation Managers
 	void StateDetector();
 	void ReverseSprite();
 	Animation CurrentAnimationFunc();
+	sf::Texture CurrentArmFunc();
 
 	//State Memory
 	void CopyState(ComplexState holder);
@@ -54,15 +62,28 @@ public:
 	Animation ani_Idle;
 	Animation ani_Death;
 	Animation ani_Run;
+	Animation ani_Melee;
+	Animation ani_AirMelee;
+	Animation ani_Jump;
 	Animation ani_Fall;
+	Animation ani_Roll;
+	Animation ani_Duck;
+	Animation ani_Block;
+
+	// Enemy Arms
+	sf::Texture txu_CurrentArm;
+	sf::Texture txu_Firing;
+	sf::Texture txu_Aiming;
+	sf::Texture txu_NoShow;
 
 	// Getters
 	int GetID();
 	sf::Sprite GetSprite();
+	sf::Sprite GetArm();
 	sf::Vector2f GetPosition();
 	sf::Vector2f GetVelocity();
 	States GetState();
-	Attributes GetAttributes();
+	EnemyAttributes GetAttributes();
 	float GetCurrentHealth();
 	float GetCurrentShields();
 
@@ -75,9 +96,9 @@ public:
 	void Spawn(int ID, Map map);
 
 	// AI States
-	bool CheckLOS();
+	bool CheckLOS(float playerAngle, float playerDistance);
 	bool CheckLowHealth();
-	bool CheckRange();
+	bool CheckRange(float playerDistance);
 	float CurrentHealthPercentage();
 	float CalculateHealthLength();
 	float CurrentShieldsPercentage();
@@ -88,6 +109,28 @@ public:
 	void MoveLeft(float ElapsedTime);
 	void MoveRight(float ElapsedTime);
 
+	// Jumping
+	void EngageJump();
+	void ProcessJump(float ElapsedTime);
+	void DisengageJump();
+
+	// Ducking
+	void EngageDuck();
+	void DisengageDuck();
+
+	// Rolling
+	void EngageLeftRoll();
+	void EngageRightRoll();
+	void ProcessRoll(float ElapsedTime);
+	void DisengageRoll();
+
+	// Blocking
+	void EngageBlock();
+	void DisengageBlock();
+
+	void EngageAttack(Attack attack, Player &player);
+	void ProcessAttack(float ElapsedTime, Attack attack);
+	void DisengageAttack();
 
 	void recieveDamage(float incomingDmg, DamageReport &report);
 

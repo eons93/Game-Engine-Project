@@ -14,20 +14,25 @@ class Player
 private:
 
 	// Player's Stats
-	Attributes att_Stats;
+	PlayerAttributes att_Stats;
 	float flo_CurrentHealth;
+	float flo_CurrentShields;
+	float flo_FinalDuration;
 
 	// Drawing Manager
 	sf::IntRect rec_Selection;
 	sf::Sprite spr_CurrentSprite;
 	sf::Texture txu_Texture;
 	Animation ani_CurrentAnimatation;
-	sf::RectangleShape rec_Arm;
+	sf::Sprite spr_Arm;   
+	sf::RectangleShape rec_DamageFlasher;
+	sf::Color SetFlasher(float ElapsedTime);
 
 	// Animation Manager 
 	void LoadAnimations();
 	void StateDetector();
 	Animation CurrentAnimationFunc();
+	sf::Texture CurrentArmFunc();   
 	void ReverseSprite();
 
 	// State Memory
@@ -49,19 +54,28 @@ private:
 	Animation ani_Roll;
 	Animation ani_Duck;
 	Animation ani_Block;
+
+	//Player Arms
+	sf::Texture txu_CurrentArm;     //**//
+	sf::Texture txu_Firing;         //**//
+	sf::Texture txu_Aiming;         //**//
+	sf::Texture txu_NoShow;         //**//
 	
 public:
 	Player();
 
 	// Getters
 	sf::Sprite GetSprite();
-	sf::RectangleShape GetArm();
+	sf::Sprite GetArm(); 
+	sf::RectangleShape GetFlasher();
 	sf::Vector2f GetPosition();
 	sf::Vector2f GetVelocity();
 	States GetState();
-	Attributes GetAttributes();
+	PlayerAttributes GetAttributes();
 	float GetCurrentHealth();
-	DamageReport GetDamageReport();
+	float GetCurrentShields();
+	float GetFinalDuration();
+	DamageReport GetDamageReport(bool type);
 
 	// State Management
 	States sta_Current;
@@ -72,7 +86,8 @@ public:
 	void Spawn(Map map);
 
 	// Misc Variables
-	DamageReport dr_Holder;
+	DamageReport dr_Output;
+	DamageReport dr_Input;
 
 	//----------------Player Actions------------------
 
@@ -97,6 +112,10 @@ public:
 	void ProcessRoll(float ElapsedTime);
 	void DisengageRoll();
 
+	// Blocking
+	void EngageBlock();
+	void DisengageBlock();
+
 	// Melee Attack
 	void EngageMelee(float angle, EnemyObject &enemy);
 	void ProcessMelee(float ElapsedTime);
@@ -106,6 +125,9 @@ public:
 	void EngageRange(float angle, EnemyObject &enemy);
 	void ProcessRange(float ElapsedTime);
 	void DisengageRange();
+
+	// Misc Combat
+	void recieveDamage(float incomingDmg);
 
 	// Updater
 	void UpdatePlayer(float ElapsedTime, float angle);

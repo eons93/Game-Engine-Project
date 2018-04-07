@@ -3,6 +3,19 @@
 
 
 
+struct LinearFunc
+{
+	float Slope;
+	float Intercept;
+};
+
+struct ParabolicFunc
+{
+	float Y_Scale;
+	float X_Scale;
+	float Intercept;
+};
+
 struct Attack
 {
 	bool type;
@@ -22,7 +35,7 @@ struct Ability
 	float Range;
 };
 
-struct Attributes
+struct PlayerAttributes
 {
 	float Health;
 	float Armor;
@@ -30,8 +43,26 @@ struct Attributes
 
 	float MovementSpeed;
 
+	float Block;
+	float Dodge;
+
 	Attack MeleeAttack;
 	Attack RangeAttack;
+
+};
+
+struct EnemyAttributes
+{
+	float Health;
+	float Armor;
+	float Shield;
+
+	float MovementSpeed;
+
+	float Block;
+	float Dodge;
+
+	Attack Attack[3];
 
 };
 
@@ -47,9 +78,11 @@ struct States
 	bool Meleeing;
 	bool MovingL;
 	bool MovingR;
+	ArmState ArmState;
 	ComplexState CurrentState;
 	bool CanJump;
 	bool TookDamage;
+	bool Invincible;
 };
 
 struct DamageReport

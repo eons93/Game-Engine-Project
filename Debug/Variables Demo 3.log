@@ -1,3 +1,46 @@
-﻿  Engine_Input.cpp
+﻿  Map.cpp
+  Generating Code...
+  Compiling...
+  Player.cpp
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(57): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(67): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(77): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(402): warning C4305: 'initializing': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(409): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+  Main.cpp
+  HUD.cpp
+  Engine_Update.cpp
+  Engine_Maps.cpp
+  Engine_Input.cpp
 d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine_input.cpp(17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Engine_Enemies.cpp
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine_enemies.cpp(40): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine_enemies.cpp(50): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine_enemies.cpp(84): warning C4305: '=': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine_enemies.cpp(94): warning C4305: '=': truncation from 'double' to 'float'
+  Engine_Draw.cpp
+  Engine_Animations.cpp
+  Engine_AIs.cpp
+  Engine_AIComponents.cpp
+  Engine.cpp
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(27): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(28): warning C4244: '=': conversion from 'unsigned int' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(32): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(71): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\engine.cpp(117): warning C4305: '=': truncation from 'double' to 'float'
+  Enemy.cpp
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\enemy.cpp(421): warning C4305: 'initializing': truncation from 'double' to 'float'
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\enemy.cpp(428): warning C4244: '=': conversion from 'float' to 'sf::Uint8', possible loss of data
+  Generating Code...
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\enemy.cpp(401): warning C4715: 'EnemyObject::CurrentAnimationFunc': not all control paths return a value
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\enemy.cpp(417): warning C4715: 'EnemyObject::CurrentArmFunc': not all control paths return a value
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(237): warning C4715: 'Player::GetDamageReport': not all control paths return a value
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(396): warning C4715: 'Player::CurrentArmFunc': not all control paths return a value
+d:\visual studio stuff\projects\variables demo 3\variables demo 3\player.cpp(380): warning C4715: 'Player::CurrentAnimationFunc': not all control paths return a value
+  Skipping... (no relevant changes detected)
+  Player_Animations.cpp
+  Player_Actions.cpp
+  GeneralFunctions.cpp
+  Enemy_Actions.cpp
+  CollisionObject.cpp
   Variables Demo 3.vcxproj -> D:\Visual Studio Stuff\Projects\Variables Demo 3\Debug\Variables Demo 3.exe

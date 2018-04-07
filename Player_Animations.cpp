@@ -4,6 +4,21 @@
 
 void Player::LoadAnimations()
 {
+
+
+	if (!txu_Firing.loadFromFile("Sprites/Player Character/Player_Firing.png"))   //**//
+	{
+		std::cout << "Player Arm: Firing source Failed to Load" << std::endl;
+	}
+	if (!txu_Aiming.loadFromFile("Sprites/Player Character/Player_Aiming.png"))   //**//
+	{
+		std::cout << "Player Arm: Aiming source Failed to Load" << std::endl;
+	}
+	if (!txu_NoShow.loadFromFile("Sprites/Player Character/Player_NoShow.png"))   //**//
+	{
+		std::cout << "Player Arm: NoShow source Failed to Load" << std::endl;
+	}
+
 	//Idle Animation
 	{
 		ani_Idle.InitializeAnimation(4, 1);
@@ -64,6 +79,15 @@ void Player::LoadAnimations()
 		if (!ani_Duck.txu_Source.loadFromFile("Sprites/Player Character/Player_Duck.png"))
 		{
 			std::cout << "Duck source Failed to Load" << std::endl;
+		}
+	}
+
+	//Block Animation
+	{
+		ani_Block.InitializeAnimation(1, 1);
+		if (!ani_Block.txu_Source.loadFromFile("Sprites/Player Character/Player_Block.png"))
+		{
+			std::cout << "Block source Failed to Load" << std::endl;
 		}
 	}
 

@@ -24,15 +24,20 @@ enum ComplexState
 	CS_DEAD,
 	CS_GROUND_FACE,
 	CS_GROUND_MOVING,
-	CS_GROUND_SHOOT,
 	CS_GROUND_MELEE,
 	CS_JUMP,
 	CS_DUCK,
 	CS_ROLL,
 	CS_BLOCK,
 	CS_AIR,
-	CS_AIR_SHOOT,
 	CS_AIR_MELEE
+};
+
+enum ArmState
+{
+	FIRING,
+	AIMING,
+	NOSHOW
 };
 
 enum AIState
