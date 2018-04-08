@@ -6,7 +6,8 @@
 #include "Enemy.h"
 
 
-//class EnemyObject;
+class Player;
+class EnemyObject;
 
 using namespace sf;
 
@@ -18,7 +19,12 @@ private:
 public:
 	Map();
 
+	void ResetIndexes();
 	void CreatePlatform(int indexStart, PlatformObject platform);
+	void LoadLocalCollisions(Player player);
+	void LoadLocalEnemies(int index, Player player, EnemyObject enemy);
+	void AssignCollisionIndex(int actual);
+	void AssignEnemyIndex(int actual);
 
 	// Maps Physical Information
 	std::vector<CollisionObject> col_CollisionData;

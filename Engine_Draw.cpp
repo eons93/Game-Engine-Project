@@ -12,9 +12,9 @@ void Engine::Draw()
 	m_Window.draw(rs_Background);
 	m_Window.draw(spr_LevelStructure);
 
-	for (int count = 0; count < map_Selected.int_NumColl; count++)
+	for (int count = 0; count < map_Selected.int_MaxCollisionIndex; count++)
 	{
-		m_Window.draw(map_Selected.col_CollisionData[count].rs_CollisionArea);
+		m_Window.draw(map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea);
 	}
 	for (int count = 0; count < map_Selected.int_NumSlop; count++)
 	{
@@ -29,17 +29,17 @@ void Engine::Draw()
 		m_Window.draw(map_Selected.pla_PlatformData[count].rs_Platform);
 	}
 	
-	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+	for (int count = 0; count < map_Selected.int_MaxEnemyIndex; count++)
 	{
-		if (ene_Spawned[count].flo_FinalDuration > 0)
+		if (ene_Spawned[map_Selected.int_LoadedEnemies[count]].flo_FinalDuration > 0)
 		{
-			m_Window.draw(ene_Spawned[count].GetSprite());
-			m_Window.draw(ene_Spawned[count].GetArm());
-			m_Window.draw(ene_Spawned[count].rec_DamageFlasher);
-			m_Window.draw(ene_Spawned[count].txt_Name);
-			m_Window.draw(ene_Spawned[count].rec_Background);
-			m_Window.draw(ene_Spawned[count].rec_CurrentHealth);
-			m_Window.draw(ene_Spawned[count].rec_CurrentShields);
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].GetSprite());
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].GetArm());
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].rec_DamageFlasher);
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].txt_Name);
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].rec_Background);
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].rec_CurrentHealth);
+			m_Window.draw(ene_Spawned[map_Selected.int_LoadedEnemies[count]].rec_CurrentShields);
 		}
 	}
 	

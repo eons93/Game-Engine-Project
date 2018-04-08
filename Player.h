@@ -28,6 +28,8 @@ private:
 	sf::RectangleShape rec_DamageFlasher;
 	sf::Color SetFlasher(float ElapsedTime);
 
+	sf::RectangleShape rec_Loader;
+
 	// Animation Manager 
 	void LoadAnimations();
 	void StateDetector();
@@ -68,6 +70,7 @@ public:
 	sf::Sprite GetSprite();
 	sf::Sprite GetArm(); 
 	sf::RectangleShape GetFlasher();
+	sf::RectangleShape GetLoader();
 	sf::Vector2f GetPosition();
 	sf::Vector2f GetVelocity();
 	States GetState();

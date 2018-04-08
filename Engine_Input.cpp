@@ -99,12 +99,12 @@ void Engine::Input()
 			{
 				int num = 0;
 
-				for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+				for (int count = 0; count < map_Selected.int_MaxEnemyIndex; count++)
 				{
-					if (ene_Spawned[count].flo_FinalDuration > 0)
+					if (ene_Spawned[map_Selected.int_LoadedEnemies[count]].flo_FinalDuration > 0)
 					{
 						num++;
-						player.EngageRange(flo_AngleCursor, ene_Spawned[count]);
+						player.EngageRange(flo_AngleCursor, ene_Spawned[map_Selected.int_LoadedEnemies[count]]);
 						hud.UpdateReports(OUTPUT, player.GetDamageReport(OUTPUT));
 					}
 				}
@@ -131,12 +131,12 @@ void Engine::Input()
 			{
 				int num = 0;
 
-				for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+				for (int count = 0; count < map_Selected.int_MaxEnemyIndex; count++)
 				{
-					if (ene_Spawned[count].flo_FinalDuration > 0)
+					if (ene_Spawned[map_Selected.int_LoadedEnemies[count]].flo_FinalDuration > 0)
 					{
 						num++;
-						player.EngageMelee(flo_AngleCursor, ene_Spawned[count]);
+						player.EngageMelee(flo_AngleCursor, ene_Spawned[map_Selected.int_LoadedEnemies[count]]);
 						hud.UpdateReports(OUTPUT, player.GetDamageReport(OUTPUT));
 					}
 				}

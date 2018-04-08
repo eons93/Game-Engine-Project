@@ -9,6 +9,13 @@ using namespace sf;
 
 void Engine::Update(float ElapsedTime)
 {
+	map_Selected.ResetIndexes();
+	map_Selected.LoadLocalCollisions(player);
+	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+	{
+		map_Selected.LoadLocalEnemies(count, player, ene_Spawned[count]);
+	}
+
 	if (player.sta_Current.TookDamage == true)
 	{
 		hud.UpdateReports(INPUT, player.dr_Input);
@@ -20,13 +27,13 @@ void Engine::Update(float ElapsedTime)
 	player.UpdatePlayer(ElapsedTime, flo_AngleCursor);
 	
 	// Enemy Updaters
-	for (int count = 0; count < map_Selected.int_NumEnemies; count++)
+	for (int count = 0; count < map_Selected.int_MaxEnemyIndex; count++)
 	{
-		if (ene_Spawned[count].flo_FinalDuration > 0)
+		if (ene_Spawned[map_Selected.int_LoadedEnemies[count]].flo_FinalDuration > 0)
 		{
-			ProcessAI(ElapsedTime, ene_Spawned[count], player);
-			DetectCollisionEnemy(ene_Spawned[count]);
-			ene_Spawned[count].Update(ElapsedTime);
+			ProcessAI(ElapsedTime, ene_Spawned[map_Selected.int_LoadedEnemies[count]], player);
+			DetectCollisionEnemy(ene_Spawned[map_Selected.int_LoadedEnemies[count]]);
+			ene_Spawned[map_Selected.int_LoadedEnemies[count]].Update(ElapsedTime);
 		}
 	}
 	
@@ -43,19 +50,19 @@ void Engine::DetectCollisionPlayer(Player &player)
 	sf::Vector2f difference(0, 0);
 
 	// Cycle through all surfaces
-	for (int count = 0; count < map_Selected.int_NumColl; count++)
+	for (int count = 0; count < map_Selected.int_MaxCollisionIndex; count++)
 	{
 		// Detect surface type and apply effects
-		switch (map_Selected.col_CollisionData[count].pt_Type)
+		switch (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].pt_Type)
 		{
 		case PT_FLOOR: //Set player position to top of surface, zero y-velocity, stop falling and allow jumping.
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& player.GetState().Jumping == false)
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(player.GetSprite().getGlobalBounds()) && player.GetState().Jumping == false)
 			{
 				edge.x = player.GetPosition().x;
 				edge.y = player.GetPosition().y + 33;
 
-				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				difference.y = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().y) - edge.y;
 				if (player.GetVelocity().y > difference.y)
 				{
 					player.vec_Velocity.y = difference.y + 1;
@@ -65,12 +72,13 @@ void Engine::DetectCollisionPlayer(Player &player)
 			}
 			break;
 		case PT_CEILING: //Set player position to bottom of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds()))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(player.GetSprite().getGlobalBounds()))
 			{
 				edge.x = player.GetPosition().x;
 				edge.y = player.GetPosition().y - 33;
 
-				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				difference.y = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().y) - edge.y;
 				if (player.GetVelocity().y < difference.y)
 				{
 					player.vec_Velocity.y = difference.y + 1;
@@ -78,13 +86,13 @@ void Engine::DetectCollisionPlayer(Player &player)
 			}
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(player.GetSprite().getGlobalBounds()) && (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
 				edge.x = player.GetPosition().x - 33;
 				edge.y = player.GetPosition().y;
 
-				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				difference.x = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().x) - edge.x;
 				if (player.GetVelocity().x < difference.x)
 				{
 					player.vec_Velocity.x = difference.x + 1;
@@ -92,13 +100,13 @@ void Engine::DetectCollisionPlayer(Player &player)
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(player.GetSprite().getGlobalBounds())
-				&& (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(player.GetSprite().getGlobalBounds()) && (player.GetVelocity().y < 2 || player.GetVelocity().y > -2))
 			{
 				edge.x = player.GetPosition().x + 33;
 				edge.y = player.GetPosition().y;
 
-				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				difference.x = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().x) - edge.x;
 				if (player.GetVelocity().x > difference.x)
 				{
 					player.vec_Velocity.x = difference.x + 1;
@@ -280,19 +288,19 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 	sf::Vector2f difference(0, 0);
 
 	// Cycle through all surfaces
-	for (int count = 0; count < map_Selected.int_NumColl; count++)
+	for (int count = 0; count < map_Selected.int_MaxCollisionIndex; count++)
 	{
 		// Detect surface type and apply effects
-		switch (map_Selected.col_CollisionData[count].pt_Type)
+		switch (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].pt_Type)
 		{
 		case PT_FLOOR: //Set player position to top of surface, zero y-velocity, stop falling and allow jumping.
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-				&& enemy.GetState().Jumping == false)
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(enemy.GetSprite().getGlobalBounds()) && enemy.GetState().Jumping == false)
 			{
 				edge.x = enemy.GetPosition().x;
 				edge.y = enemy.GetPosition().y + 33;
 
-				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				difference.y = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().y) - edge.y;
 				if (enemy.GetVelocity().y > difference.y)
 				{
 					enemy.vec_Velocity.y = difference.y + 1;
@@ -302,12 +310,13 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 			}
 			break;
 		case PT_CEILING: //Set player position to bottom of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds()))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(enemy.GetSprite().getGlobalBounds()))
 			{
 				edge.x = enemy.GetPosition().x;
 				edge.y = enemy.GetPosition().y - 33;
 
-				difference.y = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().y) - edge.y;
+				difference.y = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().y) - edge.y;
 				if (enemy.GetVelocity().y < difference.y)
 				{
 					enemy.vec_Velocity.y = difference.y + 1;
@@ -315,13 +324,13 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 			}
 			break;
 		case PT_LEFT_WALL: //Set player position to right of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(enemy.GetSprite().getGlobalBounds()) && (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
 				edge.x = enemy.GetPosition().x - 33;
 				edge.y = enemy.GetPosition().y;
 
-				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				difference.x = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().x) - edge.x;
 				if (enemy.GetVelocity().x < difference.x)
 				{
 					enemy.vec_Velocity.x = difference.x + 1;
@@ -329,13 +338,13 @@ void Engine::DetectCollisionEnemy(EnemyObject &enemy)
 			}
 			break;
 		case PT_RIGHT_WALL: //Set player position to left of surface
-			if (map_Selected.col_CollisionData[count].rs_CollisionArea.getGlobalBounds().intersects(enemy.GetSprite().getGlobalBounds())
-				&& (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
+			if (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getGlobalBounds().intersects
+				(enemy.GetSprite().getGlobalBounds()) && (enemy.GetVelocity().y < 2 || enemy.GetVelocity().y > -2))
 			{
 				edge.x = enemy.GetPosition().x + 33;
 				edge.y = enemy.GetPosition().y;
 
-				difference.x = (map_Selected.col_CollisionData[count].rs_CollisionArea.getPosition().x) - edge.x;
+				difference.x = (map_Selected.col_CollisionData[map_Selected.int_LoadedCollision[count]].rs_CollisionArea.getPosition().x) - edge.x;
 				if (enemy.GetVelocity().x > difference.x)
 				{
 					enemy.vec_Velocity.x = difference.x + 1;

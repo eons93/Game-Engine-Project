@@ -24,6 +24,11 @@ Player::Player()
 	rec_DamageFlasher.setOrigin(sf::Vector2f(32, 32));    
 	rec_DamageFlasher.setSize(sf::Vector2f(64, 64));
 	
+	// Loader
+	rec_Loader.setSize(sf::Vector2f(1000, 1000));
+	rec_Loader.setOrigin(sf::Vector2f(500, 500));
+	rec_Loader.setOutlineColor(sf::Color::Cyan);
+	rec_Loader.setOutlineThickness(-1);
 
 	//Set Default Position
 	vec_Position.x = 500;
@@ -154,6 +159,7 @@ void Player::UpdatePlayer(float ElapsedTime, float angle)
 	spr_Arm.setRotation(-angle - 90); 
 	rec_DamageFlasher.setPosition(vec_Position);
 	rec_DamageFlasher.setFillColor(SetFlasher(ElapsedTime));
+	rec_Loader.setPosition(vec_Position);
 
 	sta_Current.TookDamage = false;
 	sta_Current.Falling = true;
@@ -185,6 +191,11 @@ sf::Sprite Player::GetArm()
 sf::RectangleShape Player::GetFlasher()
 {
 	return rec_DamageFlasher;
+}
+
+sf::RectangleShape Player::GetLoader()
+{
+	return rec_Loader;
 }
 
 sf::Vector2f Player::GetPosition()
